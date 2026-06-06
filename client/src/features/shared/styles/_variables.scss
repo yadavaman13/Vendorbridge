@@ -1,4 +1,38 @@
 :root {
+    --vb-font-family: 'Inter', system-ui, -apple-system, sans-serif;
+
+    --vb-color-surface: #ffffff;
+    --vb-color-surface-muted: #f8fafc;
+    --vb-color-surface-strong: #e2e8f0;
+    --vb-color-text: #0f172a;
+    --vb-color-text-muted: #475569;
+    --vb-color-border: #e5e7eb;
+    --vb-color-border-strong: #cbd5e1;
+    --vb-color-primary: #0f172a;
+    --vb-color-primary-contrast: #ffffff;
+    --vb-color-success: #166534;
+    --vb-color-warning: #92400e;
+    --vb-color-danger: #991b1b;
+    --vb-color-info: #075985;
+
+    --vb-space-1: 0.25rem;
+    --vb-space-2: 0.5rem;
+    --vb-space-3: 0.75rem;
+    --vb-space-4: 1rem;
+    --vb-space-5: 1.25rem;
+    --vb-space-6: 1.5rem;
+    --vb-space-8: 2rem;
+
+    --vb-radius-sm: 0.5rem;
+    --vb-radius-md: 0.875rem;
+    --vb-radius-lg: 1.125rem;
+    --vb-radius-xl: 1.5rem;
+    --vb-radius-pill: 999px;
+
+    --vb-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+    --vb-shadow-md: 0 10px 30px rgba(15, 23, 42, 0.08);
+    --vb-shadow-lg: 0 18px 50px rgba(15, 23, 42, 0.18);
+
     --primary: #468a93;
     --primary-hover: #3a7178;
 
@@ -19,7 +53,7 @@
     --border-color: #333333;
     --border-radius: 8px;
 
-    --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-family: var(--vb-font-family);
 
     // Toastify Overrides
     --toastify-color-dark: #1e1d1b;

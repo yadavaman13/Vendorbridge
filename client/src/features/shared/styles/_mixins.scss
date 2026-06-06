@@ -6,3 +6,34 @@
     gap: $gap;
 }
 
+@mixin stack($gap: var(--vb-space-4), $align: stretch) {
+    display: grid;
+    gap: $gap;
+    align-items: $align;
+}
+
+@mixin surface(
+    $background: var(--vb-color-surface),
+    $border: var(--vb-color-border),
+    $shadow: var(--vb-shadow-sm),
+    $radius: var(--vb-radius-lg)
+) {
+    background: $background;
+    border: 1px solid $border;
+    border-radius: $radius;
+    box-shadow: $shadow;
+}
+
+@mixin focus-ring($color: rgba(15, 23, 42, 0.14)) {
+    outline: none;
+    box-shadow: 0 0 0 4px $color;
+}
+
+@mixin button-reset {
+    border: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    padding: 0;
+}
+

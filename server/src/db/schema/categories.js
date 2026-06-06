@@ -20,5 +20,5 @@ export const categories = pgTable("categories", {
 
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 
-  deletedAt: timestamp("deleted_at").nullable(),
+  deletedAt: timestamp("deleted_at")
 });

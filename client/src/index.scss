@@ -1,16 +1,14 @@
 @use './features/shared/styles/variables';
 @use './features/shared/styles/button';
 @use './features/shared/styles/mixins' as *;
+// @use './features/shared/styles/layout';
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family:
-        system-ui,
-        -apple-system,
-        sans-serif;
-    color: #fff;
+    font-family: var(--vb-font-family);
+    color: var(--vb-color-text);
 }
 
 html,
@@ -20,5 +18,9 @@ body {
 }
 
 body {
-    background-color: #111;
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at top, rgba(70, 138, 147, 0.12), transparent 35%),
+        linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+    color: var(--vb-color-text);
 }

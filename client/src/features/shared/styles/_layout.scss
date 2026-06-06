@@ -1,0 +1,53 @@
+.vb-stack {
+    display: grid;
+    gap: var(--vb-space-4);
+}
+
+.vb-stack--sm {
+    gap: var(--vb-space-2);
+}
+
+.vb-stack--lg {
+    gap: var(--vb-space-6);
+}
+
+.vb-cluster {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--vb-space-3);
+}
+
+.vb-page-shell {
+    min-height: 100%;
+    padding: var(--vb-space-6);
+}
+
+.vb-surface {
+    background: var(--vb-color-surface);
+    border: 1px solid var(--vb-color-border);
+    border-radius: var(--vb-radius-lg);
+    box-shadow: var(--vb-shadow-sm);
+}
+
+.vb-card {
+    padding: var(--vb-space-6);
+}
+
+.vb-scroll-x {
+    overflow-x: auto;
+}
+
+.vb-text-muted {
+    color: var(--vb-color-text-muted);
+}
+
+.vb-full-width {
+    width: 100%;
+}
+
+.vb-inline-center {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}

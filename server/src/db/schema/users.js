@@ -27,7 +27,7 @@ export const users = pgTable("users", {
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
 
-  deletedAt: timestamp("deleted_at").nullable(),
+  deletedAt: timestamp("deleted_at"),
 
   isActive: boolean("is_active").default(true).notNull(),
 
