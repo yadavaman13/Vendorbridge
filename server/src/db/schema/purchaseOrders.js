@@ -1,8 +1,8 @@
 import {
   pgTable,
-  uuid,
-  varchar,
+  serial,
   integer,
+  varchar,
   numeric,
   date,
   text,
@@ -11,17 +11,21 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { poStatusEnum } from "./enums.js";
+import { rfqs } from "./rfqs.js";
+import { vendors } from "./vendors.js";
+import { users } from "./users.js";
+import { quotations } from "./quotations.js";
 
 export const purchaseOrders = pgTable("purchase_orders", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: serial("id").primaryKey(),
 
   poNumber: varchar("po_number", { length: 50 }).notNull().unique(),
 
-  rfqId: integer("rfq_id"),
-  quotationId: integer("quotation_id").unique(),
-  vendorId: uuid("vendor_id"),
+  rfqId: integer("rfq_id").references(() => rfqs.id),
+  quotationId: integer("quotation_id").unique().references(() => quotations.id),
+  vendorId: integer("vendor_id").references(() => vendors.id),
 
-  createdBy: uuid("created_by"),
+  createdBy: integer("created_by").references(() => users.id),
 
   status: poStatusEnum("status").default("CREATED"),
 

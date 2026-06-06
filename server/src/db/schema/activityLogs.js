@@ -1,6 +1,6 @@
 import {
   pgTable,
-  uuid,
+  serial,
   integer,
   text,
   timestamp,
@@ -15,15 +15,15 @@ import {
 import { users } from "./users.js";
 
 export const activityLogs = pgTable("activity_logs", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: serial("id").primaryKey(),
 
-  userId: uuid("user_id").references(() => users.id),
+  userId: integer("user_id").references(() => users.id),
 
   actionType: activityActionTypeEnum("action_type"),
 
   entityType: activityEntityTypeEnum("entity_type"),
 
-  entityId: uuid("entity_id"),
+  entityId: integer("entity_id"),
 
   oldValue: jsonb("old_value"),
 

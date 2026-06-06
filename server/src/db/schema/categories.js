@@ -1,6 +1,6 @@
 import {
   pgTable,
-  uuid,
+  serial,
   varchar,
   text,
   boolean,
@@ -8,7 +8,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const categories = pgTable("categories", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: serial("id").primaryKey(),
 
   name: varchar("name", { length: 100 }).notNull().unique(),
 
