@@ -63,10 +63,9 @@ const vendorRegisterValidator = [
     .isLength({ min: 5 })
     .withMessage("GST number is required."),
   body("categoryId")
-    .trim()
     .notEmpty()
-    .isUUID()
-    .withMessage("Valid categoryId (UUID) is required."),
+    .isInt()
+    .withMessage("Valid categoryId (integer) is required."),
   validateRequest,
 ];
 

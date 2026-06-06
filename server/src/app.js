@@ -1,9 +1,11 @@
-import express from "express";
-import cookieParser from "cookie-parser";
-import cors from "cors";
-import morgan from "morgan";
-import envConfig from "./config/envConfig.js";
-import authRoutes from "./routes/auth.routes.js";
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import morgan from 'morgan';
+import envConfig from './config/envConfig.js';
+import authRoutes from './routes/auth.routes.js';
+import vendorsRoutes from './routes/vendors.routes.js';
+import activityLogRoutes from './routes/activity-log.routes.js';
 import userRoutes from "./routes/users.routes.js";
 import categoriesRoutes from './routes/categories.routes.js';
 
@@ -19,7 +21,9 @@ app.use(
 );
 app.use(morgan("combined")); //  Logging middleware for better debugging
 
-app.use("/api/auth", authRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/vendors', vendorsRoutes);
+app.use('/api', activityLogRoutes);
 app.use("/api/users", userRoutes);
 app.use('/api/categories', categoriesRoutes);
 
