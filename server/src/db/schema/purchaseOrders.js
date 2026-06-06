@@ -1,6 +1,6 @@
 import {
   pgTable,
-  serial,
+  uuid,
   varchar,
   integer,
   numeric,
@@ -13,15 +13,15 @@ import {
 import { poStatusEnum } from "./enums.js";
 
 export const purchaseOrders = pgTable("purchase_orders", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),
 
   poNumber: varchar("po_number", { length: 50 }).notNull().unique(),
 
   rfqId: integer("rfq_id"),
   quotationId: integer("quotation_id").unique(),
-  vendorId: integer("vendor_id"),
+  vendorId: uuid("vendor_id"),
 
-  createdBy: integer("created_by"),
+  createdBy: uuid("created_by"),
 
   status: poStatusEnum("status").default("CREATED"),
 
