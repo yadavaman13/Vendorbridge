@@ -6,3 +6,5 @@ package-lock.json
 .ai/
 .github/
 Hackathon-ERP-Discussion.md
+.tmp-server-err.log
+.tmp-server-out.log
