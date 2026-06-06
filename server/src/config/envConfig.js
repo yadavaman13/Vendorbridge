@@ -2,19 +2,21 @@ function normalizeOrigin(origin = '') {
     return origin.trim().replace(/\/$/, '');
 }
 
+const LOCAL_DEV_ORIGIN = 'http://localhost:5173';
+
 const clientOrigins = (process.env.CLIENT_ORIGINS || '')
     .split(',')
     .map(normalizeOrigin)
     .filter(Boolean);
 
+if (!clientOrigins.includes(LOCAL_DEV_ORIGIN)) {
+    clientOrigins.push(LOCAL_DEV_ORIGIN);
+}
+
 const isProduction = process.env.NODE_ENV == 'production';
 
 if (!process.env.JWT_SECRET) {
     throw new Error('MISSING ENVIRONMENT VARIABLE: JWT_SECRET');
-}
-
-if (!process.env.CLIENT_ORIGINS) {
-    throw new Error('MISSING ENVIRONMENT VARIABLE: CLIENT_ORIGINS');
 }
 
 if (!clientOrigins.length) {

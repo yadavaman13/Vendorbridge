@@ -3,27 +3,20 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../../auth/hooks/useAuth';
+import Logout from '../../auth/components/LogoutButton';
+import Sidebar from '../components/Sidebar';
 import {
-    FileQuestion,
-    CheckCircle,
-    ShoppingCart,
-    Receipt,
-    TrendingUp,
-    TrendingDown,
-    Clock,
-    Plus,
-    ArrowRight,
-    BarChart2,
-    Package,
     Activity,
-    Loader2,
-    AlertCircle,
-    Sun,
-    Sunset,
+    BarChart2,
+    CheckCircle,
+    FileQuestion,
     Moon,
+    Package,
+    Receipt,
+    ShoppingCart,
+    Sunset,
+    Sun,
 } from 'lucide-react';
-import Layout from '../components/Layout';
-import '../styles/home-page.scss';
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL || '',
@@ -260,164 +253,18 @@ const HomePage = () => {
 
     /* ── render ── */
     return (
-        <Layout title="Dashboard">
-            <div className="dashboard-root">
-
-                {/* ── Greeting ── */}
-                <div className="dash-greeting">
-                    <div className="dash-greeting-text">
-                        <div className="dash-greeting-icon">
-                            <GreetingIcon />
-                        </div>
-                        <div>
-                            <h2 className="dash-greeting-title">
-                                {getGreeting()}, {user?.name?.split(' ')[0] || 'welcome back'}
-                            </h2>
-                            <p className="dash-greeting-sub">
-                                Here's what's happening with your procurement today.
-                            </p>
-                        </div>
-                    </div>
-                    <button className="dash-new-rfq-btn" onClick={() => navigate('/purchase-orders')}>
-                        <Plus size={16} /> New Purchase Order
-                    </button>
-                </div>
-
-                {/* ── Stat Cards ── */}
-                <div className="dash-stat-grid">
-                    {STATS.map(s => (
-                        <div key={s.id} className="stat-card">
-                            <div className="stat-card-top">
-                                <div className="stat-icon" style={{ background: s.bg, color: s.color }}>
-                                    {s.icon}
-                                </div>
-                            </div>
-                            <div className="stat-value">
-                                {s.loading
-                                    ? <Loader2 size={24} className="spin-icon" />
-                                    : s.value
-                                }
-                            </div>
-                            <div className="stat-label">{s.label}</div>
-                            <div className={`stat-change ${s.trend}`}>
-                                {s.trend === 'up'      && <TrendingUp size={13} />}
-                                {s.trend === 'down'    && <TrendingDown size={13} />}
-                                {s.trend === 'warning' && <Clock size={13} />}
-                                <span>{s.change}</span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                {/* ── Bottom grid ── */}
-                <div className="dash-bottom-grid">
-
-                    {/* Recent Purchase Orders */}
-                    <div className="dash-card dash-card--table">
-                        <div className="dash-card-header">
-                            <h3 className="dash-card-title">Recent Purchase Orders</h3>
-                            <button className="dash-view-all-btn" onClick={() => navigate('/purchase-orders')}>
-                                View All <ArrowRight size={14} />
-                            </button>
-                        </div>
-                        <table className="dash-po-table">
-                            <thead>
-                                <tr>
-                                    <th>PO Number</th>
-                                    <th>Vendor</th>
-                                    <th>Amount</th>
-                                    <th>Date</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {loadingP ? (
-                                    <SkeletonRows cols={5} />
-                                ) : recentPOs.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={5}>
-                                            <div className="dash-empty-row">
-                                                <AlertCircle size={20} />
-                                                <span>No purchase orders yet</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    recentPOs.map(po => (
-                                        <tr key={po.id}>
-                                            <td className="po-id-cell">{po.poNumber}</td>
-                                            <td>{po.companyName || po.vendorName || '—'}</td>
-                                            <td className="po-amount-cell">
-                                                INR {Number(po.totalAmount).toLocaleString()}
-                                            </td>
-                                            <td className="po-date-cell">
-                                                {new Date(po.createdAt).toLocaleDateString('en-IN', {
-                                                    day: '2-digit', month: 'short', year: 'numeric'
-                                                })}
-                                            </td>
-                                            <td><StatusBadge status={po.status} /></td>
-                                        </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {/* Right column */}
-                    <div className="dash-right-col">
-
-                        {/* Spending Trends */}
-                        <div className="dash-card dash-card--chart">
-                            <div className="dash-card-header">
-                                <h3 className="dash-card-title">Spending Trends</h3>
-                                <span className="dash-card-subtitle">Last 6 months</span>
-                            </div>
-                            {loadingP ? (
-                                <div className="chart-loading">
-                                    <Loader2 size={20} className="spin-icon" />
-                                    <span>Loading data...</span>
-                                </div>
-                            ) : (
-                                <>
-                                    <div className="chart-total">
-                                        <span className="chart-total-val">
-                                            INR {totalSpend >= 100000
-                                                ? `${(totalSpend / 100000).toFixed(1)}L`
-                                                : totalSpend.toLocaleString()}
-                                        </span>
-                                        <span className="chart-total-label">Total spend</span>
-                                    </div>
-                                    <BarChart data={spendingData} loading={false} />
-                                </>
-                            )}
-                        </div>
-
-                        {/* Quick Actions */}
-                        <div className="dash-card dash-card--actions">
-                            <h3 className="dash-card-title" style={{ marginBottom: '14px' }}>Quick Actions</h3>
-                            <div className="quick-actions-grid">
-                                {QUICK_ACTIONS.map(a => (
-                                    <button
-                                        key={a.id}
-                                        id={`quick-action-${a.id}`}
-                                        className="quick-action-btn"
-                                        onClick={() => navigate(a.path)}
-                                        style={{ '--action-color': a.color }}
-                                    >
-                                        <span className="qa-icon" style={{ color: a.color, background: `${a.color}18` }}>
-                                            {a.icon}
-                                        </span>
-                                        <span className="qa-label">{a.label}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
+        <main>
+            <div className="home-with-sidebar">
+                <Sidebar />
+                <div className="home-content">
+                    <div className="home-container">
+                        <h1>Welcome, {user?.name || user?.email}!</h1>
+                        <p>You are successfully logged in.</p>
+                        <Logout />
                     </div>
                 </div>
-
             </div>
-        </Layout>
+        </main>
     );
 };
 

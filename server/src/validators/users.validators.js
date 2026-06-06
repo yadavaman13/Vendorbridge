@@ -45,9 +45,37 @@ const updateUserRoleValidator = [
   validateRequest,
 ];
 
+const updateUserValidator = [
+  param("id").isInt({ min: 1 }).withMessage("Valid user id is required."),
+  body("name")
+    .optional()
+    .trim()
+    .isLength({ min: 2 })
+    .withMessage("Name must be at least 2 characters."),
+  body("email")
+    .optional()
+    .trim()
+    .isEmail()
+    .withMessage("A valid email address is required."),
+  body("phone")
+    .optional()
+    .trim()
+    .matches(/^[0-9]{10}$/)
+    .withMessage("Phone must be a 10 digit number."),
+  body("role")
+    .optional()
+    .trim()
+    .isIn(allowedRoles)
+    .withMessage(
+      "Role must be one of ADMIN, PROCUREMENT_OFFICER, MANAGER, or VENDOR.",
+    ),
+  validateRequest,
+];
+
 export {
   validateRequest,
   listUsersValidator,
   userIdParamValidator,
   updateUserRoleValidator,
+  updateUserValidator,
 };

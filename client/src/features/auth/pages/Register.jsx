@@ -4,9 +4,11 @@ import { useAuth } from '../hooks/useAuth.js';
 import { getCategories } from '../../shared/services/categories.api.js';
 
 import FormGroup from '../components/FormGroup';
+import FormField from '../../shared/components/FormField';
 import {
     validateEmail,
     validatePasswordStrength,
+    validatePhone,
 } from '../utils/validation.utils';
 import PasswordMeter from '../components/PasswordMeter';
 import '../styles/auth.scss';
@@ -14,6 +16,8 @@ import '../styles/auth.scss';
 const createInitialErrors = () => ({
     username: '',
     email: '',
+    phone: '',
+    role: '',
     password: '',
     phone: '',
     companyName: '',
@@ -40,6 +44,8 @@ const Register = () => {
     const [formValues, setFormValues] = useState({
         username: '',
         email: '',
+        phone: '',
+        role: '',
         password: '',
         phone: '',
         companyName: '',
@@ -51,6 +57,8 @@ const Register = () => {
     const [touched, setTouched] = useState({
         username: false,
         email: false,
+        phone: false,
+        role: false,
         password: false,
         phone: false,
         companyName: false,
@@ -114,11 +122,7 @@ const Register = () => {
         }
 
         if (fieldName === 'phone') {
-            const trimmed = fieldValue.trim();
-            if (!trimmed) {
-                return 'Phone number is required.';
-            }
-            return /^\d{10}$/.test(trimmed) ? '' : 'Phone number must be exactly 10 digits.';
+            return validatePhone(fieldValue);
         }
 
         if (fieldName === 'companyName') {
@@ -137,6 +141,10 @@ const Register = () => {
             return fieldValue ? '' : 'Category selection is required.';
         }
 
+        if (fieldName === 'address') {
+            return fieldValue.trim() ? '' : 'Company address is required.';
+        }
+
         return '';
     };
 
@@ -145,8 +153,8 @@ const Register = () => {
             ...errors,
             username: validateField('username', formValues.username),
             email: validateField('email', formValues.email),
-            password: validateField('password', formValues.password),
             phone: validateField('phone', formValues.phone),
+            password: validateField('password', formValues.password),
         };
         setErrors(nextErrors);
         setTouched((prev) => ({
@@ -237,6 +245,8 @@ const Register = () => {
             const result = await handleRegister({
                 name: formValues.username,
                 email: formValues.email,
+                phone: formValues.phone,
+                role: formValues.role,
                 password: formValues.password,
                 phone: formValues.phone,
                 companyName: formValues.companyName,

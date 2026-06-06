@@ -1,6 +1,9 @@
 @use './features/shared/styles/variables';
 @use './features/shared/styles/button';
 @use './features/shared/styles/mixins' as *;
+@use './features/shared/styles/layout';
+@use './features/dashboard/styles/dashboard';
+@use './features/vendors/styles/vendors';
 @use './features/purchase-order/styles/purchase-order';
 @use './features/shared/styles/home-page';
 @use './features/shared/styles/pages';

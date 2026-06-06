@@ -165,18 +165,28 @@ async function sendTokenResponse({ res, user, vendor, message }) {
  */
 async function registerUserController(req, res) {
   try {
-    const { email, password, name, phone } = req.body || {};
+    const { email, password, name, phone, role } = req.body || {};
     const normalizedEmail =
       typeof email === "string" ? email.trim().toLowerCase() : "";
     const passwordValue = typeof password === "string" ? password : "";
     const nameValue = typeof name === "string" ? name.trim() : null;
     const phoneValue = typeof phone === "string" ? phone.trim() : "";
+    const roleValue = normalizeRole(role);
 
-    if (!normalizedEmail || !passwordValue || !phoneValue) {
+    if (!normalizedEmail || !passwordValue || !phoneValue || !roleValue) {
       return sendResponse({
         res,
         statusCode: 400,
-        message: "Email, password, and phone are required.",
+        message: "Email, password, phone, and role are required.",
+        success: false,
+      });
+    }
+
+    if (!ALLOWED_ROLES.has(roleValue)) {
+      return sendResponse({
+        res,
+        statusCode: 400,
+        message: "Valid role is required.",
         success: false,
       });
     }
@@ -199,7 +209,7 @@ async function registerUserController(req, res) {
         password: hashedPassword,
         name: nameValue || null,
         phone: phoneValue,
-        role: "VENDOR",
+        role: roleValue,
         isVerified: false,
       })
       .returning();

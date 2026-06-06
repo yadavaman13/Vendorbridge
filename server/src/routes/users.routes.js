@@ -4,11 +4,14 @@ import {
   getUserByIdController,
   listUsersController,
   updateUserRoleController,
+  updateUserController,
+  deleteUserController,
 } from "../controllers/users.controller.js";
 import {
   listUsersValidator,
   userIdParamValidator,
   updateUserRoleValidator,
+  updateUserValidator,
 } from "../validators/users.validators.js";
 
 const userRoutes = Router();
@@ -38,6 +41,22 @@ userRoutes.patch(
   isAdmin,
   updateUserRoleValidator,
   updateUserRoleController,
+);
+
+userRoutes.patch(
+  "/:id",
+  authUser,
+  isAdmin,
+  updateUserValidator,
+  updateUserController,
+);
+
+userRoutes.delete(
+  "/:id",
+  authUser,
+  isAdmin,
+  userIdParamValidator,
+  deleteUserController,
 );
 
 export default userRoutes;

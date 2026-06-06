@@ -21,12 +21,12 @@ export const useAuth = () => {
 
         let data;
         try {
-            data = await register({ name, email, password, phone, companyName, gstNumber, categoryId, address });
-            console.log('Registration Response', data);
-            if (data?.user) {
+
+            data = await register({ name, email, phone, role, password });
+            console.log('Registration Failed', data);
+
                 setUser(data.user);
                 sessionStorage.setItem('user', JSON.stringify(data.user));
-            }
 
             return data;
         } catch (err) {

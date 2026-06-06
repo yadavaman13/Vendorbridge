@@ -1,10 +1,42 @@
 :root {
-    /* Brand */
+    --vb-font-family: 'Inter', system-ui, -apple-system, sans-serif;
+
+    --vb-color-surface: #ffffff;
+    --vb-color-surface-muted: #f8fafc;
+    --vb-color-surface-strong: #e2e8f0;
+    --vb-color-text: #0f172a;
+    --vb-color-text-muted: #475569;
+    --vb-color-border: #e5e7eb;
+    --vb-color-border-strong: #cbd5e1;
+    --vb-color-primary: #0f172a;
+    --vb-color-primary-contrast: #ffffff;
+    --vb-color-success: #166534;
+    --vb-color-warning: #92400e;
+    --vb-color-danger: #991b1b;
+    --vb-color-info: #075985;
+
+    --vb-space-1: 0.25rem;
+    --vb-space-2: 0.5rem;
+    --vb-space-3: 0.75rem;
+    --vb-space-4: 1rem;
+    --vb-space-5: 1.25rem;
+    --vb-space-6: 1.5rem;
+    --vb-space-8: 2rem;
+
+    --vb-radius-sm: 0.5rem;
+    --vb-radius-md: 0.875rem;
+    --vb-radius-lg: 1.125rem;
+    --vb-radius-xl: 1.5rem;
+    --vb-radius-pill: 999px;
+
+    --vb-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+    --vb-shadow-md: 0 10px 30px rgba(15, 23, 42, 0.08);
+    --vb-shadow-lg: 0 18px 50px rgba(15, 23, 42, 0.18);
+
     --primary: #714b67;
     --primary-hover: #5f3954;
     --on-primary: #ffffff;
     --primary-faint: rgba(113, 75, 103, 0.08);
-    --primary-light: rgba(113, 75, 103, 0.15);
 
     /* App backgrounds — light theme only */
     --bg-app: #f4f2f8;
@@ -23,8 +55,7 @@
     --border-radius: 8px;
     --border-radius-lg: 12px;
 
-    /* Typography */
-    --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-family: var(--vb-font-family);
 
     /* Semantic colours */
     --danger: #e65b65;
@@ -36,19 +67,9 @@
     --success-text: #15803d;
     --success-bg-10: rgba(34, 197, 94, 0.1);
 
-    --warning: #f59e0b;
-    --warning-bg: rgba(245, 158, 11, 0.1);
-
-    --info: #3b82f6;
-    --info-bg: rgba(59, 130, 246, 0.1);
-
-    /* Shadows */
-    --shadow-sm: 0 1px 4px rgba(113, 75, 103, 0.06);
-    --shadow-md: 0 4px 16px rgba(113, 75, 103, 0.08);
-    --shadow-lg: 0 8px 32px rgba(113, 75, 103, 0.12);
-
-    /* Overlays */
-    --overlay-dark-58: rgba(0, 0, 0, 0.45);
+    /* overlays & shadows used by modals/toasts */
+    --overlay-dark-58: rgba(0, 0, 0, 0.58);
+    --overlay-dark-98: rgba(30, 30, 30, 0.98);
     --overlay-white-10: rgba(255, 255, 255, 0.1);
     --alert-border-30: rgba(255, 128, 128, 0.3);
     --alert-bg-08: rgba(255, 77, 77, 0.08);

@@ -1,201 +1,338 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import Layout from '../../shared/components/Layout';
+import React, { useMemo } from 'react';
 import { useAuth } from '../../auth/hooks/useAuth';
-import {
-    FileText, CheckCircle, XCircle, AlertCircle, Search, RefreshCw, Plus,
-} from 'lucide-react';
+import { useQuotations } from '../hooks/useQuotations';
+import Table from '../../shared/components/Table';
+import Modal from '../../shared/components/Modal';
+import Loader from '../../shared/components/Loader';
+import Toast from '../../shared/components/Toast';
+import '../styles/quotations.scss';
 
-const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || '', withCredentials: true });
+const formatAmount = (value) => {
+    if (value == null) return '—';
+    return `₹${Number(value).toLocaleString('en-IN')}`;
+};
 
-const StatusBadge = ({ status }) => (
-    <span className={`status-badge ${status?.toLowerCase()}`}>{status}</span>
-);
+const formatDate = (value) => {
+    if (!value) return '—';
+    const date = new Date(value);
+    return date.toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
+};
 
-const QuotationsPage = () => {
-    const { user } = useAuth();
-    const [quotations, setQuotations] = useState([]);
-    const [total, setTotal] = useState(0);
-    const [loading, setLoading] = useState(true);
-    const [search, setSearch] = useState('');
-    const [statusFilter, setStatusFilter] = useState('');
-    const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
-
-    const showToast = (message, type = 'success') => {
-        setToast({ visible: true, message, type });
-        setTimeout(() => setToast(p => ({ ...p, visible: false })), 4000);
-    };
-
-    const fetchQuotations = async () => {
-        setLoading(true);
-        try {
-            const params = new URLSearchParams({ limit: 100 });
-            if (statusFilter) params.set('status', statusFilter);
-            const res = await api.get(`/api/quotations?${params}`);
-            if (res.data?.success) {
-                setQuotations(res.data.data.items || []);
-                setTotal(res.data.data.total || 0);
-            }
-        } catch (err) {
-            console.error(err);
-            showToast('Failed to load quotations.', 'error');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => { fetchQuotations(); }, [statusFilter]);
-
-    const handleSelect = async (id) => {
-        try {
-            const res = await api.patch(`/api/quotations/${id}/select`);
-            if (res.data?.success) { showToast('Quotation selected!'); fetchQuotations(); }
-        } catch (err) { showToast(err.response?.data?.message || 'Failed.', 'error'); }
-    };
-
-    const handleReject = async (id) => {
-        try {
-            const res = await api.patch(`/api/quotations/${id}/reject`);
-            if (res.data?.success) { showToast('Quotation rejected.'); fetchQuotations(); }
-        } catch (err) { showToast(err.response?.data?.message || 'Failed.', 'error'); }
-    };
-
-    const isStaff = user?.role !== 'VENDOR';
-
-    const filtered = quotations.filter(q =>
-        !search ||
-        q.rfqTitle?.toLowerCase().includes(search.toLowerCase()) ||
-        q.companyName?.toLowerCase().includes(search.toLowerCase())
-    );
-
-    // Group by status for summary
-    const summary = {
-        PENDING: quotations.filter(q => q.status === 'PENDING').length,
-        SELECTED: quotations.filter(q => q.status === 'SELECTED').length,
-        REJECTED: quotations.filter(q => q.status === 'REJECTED').length,
-    };
-
+const QuotationStatusBadge = ({ status }) => {
+    const normalized = status?.toLowerCase() || '';
     return (
-        <Layout title="Quotations">
-            {toast.visible && (
-                <div className={`toast-banner ${toast.type === 'error' ? 'is-error' : 'is-success'}`}>
-                    {toast.type === 'error' ? <XCircle size={18} /> : <CheckCircle size={18} />}
-                    <span className="toast-message">{toast.message}</span>
-                </div>
-            )}
-
-            {/* Summary chips */}
-            <div className="summary-chips">
-                <div className="summary-chip chip-total">
-                    <span className="chip-value">{total}</span>
-                    <span className="chip-label">Total Bids</span>
-                </div>
-                <div className="summary-chip chip-pending">
-                    <span className="chip-value">{summary.PENDING}</span>
-                    <span className="chip-label">Pending</span>
-                </div>
-                <div className="summary-chip chip-success">
-                    <span className="chip-value">{summary.SELECTED}</span>
-                    <span className="chip-label">Selected</span>
-                </div>
-                <div className="summary-chip chip-danger">
-                    <span className="chip-value">{summary.REJECTED}</span>
-                    <span className="chip-label">Rejected</span>
-                </div>
-            </div>
-
-            <div className="page-toolbar">
-                <div className="page-toolbar-left">
-                    <h2 className="page-section-title">
-                        <FileText size={18} /> Quotation Bids
-                    </h2>
-                </div>
-                <div className="page-toolbar-right">
-                    <div className="search-input-wrap">
-                        <Search size={15} />
-                        <input
-                            type="text"
-                            placeholder="Search by title or vendor..."
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                            className="search-input"
-                        />
-                    </div>
-                    <select
-                        value={statusFilter}
-                        onChange={e => setStatusFilter(e.target.value)}
-                        className="filter-select"
-                    >
-                        <option value="">All Statuses</option>
-                        <option value="PENDING">Pending</option>
-                        <option value="SELECTED">Selected</option>
-                        <option value="REJECTED">Rejected</option>
-                    </select>
-                    <button className="icon-action-btn" onClick={fetchQuotations} title="Refresh">
-                        <RefreshCw size={15} />
-                    </button>
-                </div>
-            </div>
-
-            <div className="procurement-content-card" style={{ minHeight: 300 }}>
-                {loading ? (
-                    <div className="loading-state"><div className="spinner" /><p>Loading quotations...</p></div>
-                ) : filtered.length === 0 ? (
-                    <div className="empty-state"><AlertCircle size={40} /><p>No quotations match your filters.</p></div>
-                ) : (
-                    <table className="procurement-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>RFQ Title</th>
-                                <th>Vendor</th>
-                                <th>Qty</th>
-                                <th>Unit Price</th>
-                                <th>Total</th>
-                                <th>Delivery</th>
-                                <th>Status</th>
-                                {isStaff && <th>Actions</th>}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filtered.map(q => (
-                                <tr key={q.id}>
-                                    <td style={{ color: 'var(--primary)', fontWeight: 700 }}>#{q.id}</td>
-                                    <td>{q.rfqTitle || '—'}</td>
-                                    <td><strong>{q.companyName}</strong></td>
-                                    <td>{q.quantity || '—'}</td>
-                                    <td>INR {Number(q.unitPrice || 0).toLocaleString()}</td>
-                                    <td><strong>INR {Number(q.totalAmount).toLocaleString()}</strong></td>
-                                    <td>{q.leadTimeDays ? `${q.leadTimeDays}d` : '—'}</td>
-                                    <td><StatusBadge status={q.status} /></td>
-                                    {isStaff && (
-                                        <td>
-                                            <div className="action-button-group">
-                                                {q.status === 'PENDING' && (
-                                                    <>
-                                                        <button className="action-btn generate-po-btn" onClick={() => handleSelect(q.id)}>
-                                                            <CheckCircle size={13} /> Select
-                                                        </button>
-                                                        <button
-                                                            className="action-btn"
-                                                            style={{ background: 'var(--danger-bg-08)', color: 'var(--danger)', border: '1px solid var(--danger)' }}
-                                                            onClick={() => handleReject(q.id)}
-                                                        >
-                                                            <XCircle size={13} /> Reject
-                                                        </button>
-                                                    </>
-                                                )}
-                                            </div>
-                                        </td>
-                                    )}
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                )}
-            </div>
-        </Layout>
+        <span className={`vb-quotation-badge status-${normalized}`}>
+            {status}
+        </span>
     );
 };
 
-export default QuotationsPage;
+const QuotationDetailsItem = ({ label, value }) => (
+    <div className="vb-quotation-details__item">
+        <span className="vb-quotation-details__label">{label}</span>
+        <span className="vb-quotation-details__value">{value || '—'}</span>
+    </div>
+);
+
+const QuotationItemsTable = ({ items }) => (
+    <table className="vb-quotation-items-table">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Delivery (days)</th>
+                <th>Line Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {items.map((item) => (
+                <tr key={item.id}>
+                    <td>{item.itemName}</td>
+                    <td>{item.quantity}</td>
+                    <td>{formatAmount(item.unitPrice)}</td>
+                    <td>{item.deliveryDays}</td>
+                    <td>{formatAmount(item.lineTotal)}</td>
+                </tr>
+            ))}
+        </tbody>
+    </table>
+);
+
+const QuotationPage = () => {
+    const { user } = useAuth();
+    const {
+        quotations,
+        total,
+        page,
+        limit,
+        statusFilter,
+        searchTerm,
+        loading,
+        detailsLoading,
+        error,
+        selectedQuotation,
+        toastConfig,
+        fetchQuotationDetails,
+        setSelectedQuotation,
+        closeToast,
+        handleStatusFilterChange,
+        handleSearchChange,
+        handleSubmit,
+        handleSelect,
+        handleReject,
+        setPage,
+    } = useQuotations();
+
+    const isVendor = user?.role === 'VENDOR';
+    const isApprover = ['ADMIN', 'PROCUREMENT_OFFICER', 'MANAGER'].includes(user?.role);
+    const totalPages = Math.max(1, Math.ceil(total / limit));
+
+    const columns = useMemo(() => {
+        const baseColumns = [
+            {
+                key: 'rfqTitle',
+                header: 'RFQ',
+                render: (row) => row.rfqTitle || '—',
+            },
+            {
+                key: 'totalAmount',
+                header: 'Total',
+                render: (row) => formatAmount(row.totalAmount),
+            },
+            {
+                key: 'status',
+                header: 'Status',
+                render: (row) => <QuotationStatusBadge status={row.status} />,
+            },
+            {
+                key: 'submittedAt',
+                header: 'Submitted',
+                render: (row) => formatDate(row.submittedAt),
+            },
+        ];
+
+        if (isApprover) {
+            baseColumns.splice(1, 0, {
+                key: 'companyName',
+                header: 'Vendor',
+                render: (row) => row.companyName || '—',
+            });
+        }
+
+        return baseColumns;
+    }, [isApprover]);
+
+    const handleRowClick = async (row) => {
+        await fetchQuotationDetails(row.id);
+    };
+
+    const getModalFooter = () => {
+        if (!selectedQuotation) {
+            return (
+                <button type="button" className="vb-btn vb-btn--secondary" onClick={() => setSelectedQuotation(null)}>
+                    Close
+                </button>
+            );
+        }
+
+        if (isVendor && selectedQuotation.status === 'DRAFT') {
+            return (
+                <div className="vb-quotations-modal__actions">
+                    <button
+                        type="button"
+                        className="vb-btn vb-btn--success"
+                        onClick={async () => {
+                            const result = await handleSubmit(selectedQuotation.id);
+                            if (result.success) {
+                                fetchQuotationDetails(selectedQuotation.id);
+                            }
+                        }}
+                        disabled={loading}
+                    >
+                        Submit Quotation
+                    </button>
+                    <button type="button" className="vb-btn vb-btn--secondary" onClick={() => setSelectedQuotation(null)}>
+                        Close
+                    </button>
+                </div>
+            );
+        }
+
+        if (isApprover && selectedQuotation.status === 'SUBMITTED') {
+            return (
+                <div className="vb-quotations-modal__actions">
+                    <button
+                        type="button"
+                        className="vb-btn vb-btn--danger"
+                        onClick={async () => {
+                            const result = await handleReject(selectedQuotation.id);
+                            if (result.success) {
+                                fetchQuotationDetails(selectedQuotation.id);
+                            }
+                        }}
+                        disabled={loading}
+                    >
+                        Reject Quotation
+                    </button>
+                    <button
+                        type="button"
+                        className="vb-btn vb-btn--success"
+                        onClick={async () => {
+                            const result = await handleSelect(selectedQuotation.id);
+                            if (result.success) {
+                                fetchQuotationDetails(selectedQuotation.id);
+                            }
+                        }}
+                        disabled={loading}
+                    >
+                        Select as Winner
+                    </button>
+                    <button type="button" className="vb-btn vb-btn--secondary" onClick={() => setSelectedQuotation(null)}>
+                        Close
+                    </button>
+                </div>
+            );
+        }
+
+        return (
+            <button type="button" className="vb-btn vb-btn--secondary" onClick={() => setSelectedQuotation(null)}>
+                Close
+            </button>
+        );
+    };
+
+    return (
+        <div className="vb-page-shell">
+            <header className="vb-quotations-page__header">
+                <h1 className="vb-quotations-page__title">Quotations</h1>
+                <p className="vb-quotations-page__subtitle">
+                    Review and manage submitted quotations for RFQs across procurement.
+                </p>
+            </header>
+
+            <div className="vb-quotations-page__toolbar vb-surface">
+                <div className="vb-quotations-page__search-box">
+                    <div className="vb-search-input-wrapper">
+                        <span className="vb-search-icon">🔍</span>
+                        <input
+                            type="search"
+                            value={searchTerm}
+                            onChange={(event) => handleSearchChange(event.target.value)}
+                            placeholder="Search by RFQ, vendor, amount, or status"
+                            className="vb-search-input"
+                        />
+                        {searchTerm && (
+                            <button
+                                type="button"
+                                className="vb-search-clear"
+                                onClick={() => handleSearchChange('')}
+                                aria-label="Clear search"
+                            >
+                                ×
+                            </button>
+                        )}
+                    </div>
+                    <span className="vb-search-summary">Showing {quotations.length} of {total} quotations</span>
+                </div>
+
+                <div className="vb-filter-tabs">
+                    {['', 'DRAFT', 'SUBMITTED', 'SELECTED', 'REJECTED'].map((status) => (
+                        <button
+                            key={status || 'ALL'}
+                            type="button"
+                            className={`vb-filter-tab ${statusFilter === status ? 'active' : ''}`}
+                            onClick={() => handleStatusFilterChange(status)}
+                        >
+                            {status ? status.toLowerCase().replace('_', ' ') : 'All'}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {error ? (
+                <div className="vb-quotations-page__alert error-alert">
+                    <span>{error}</span>
+                </div>
+            ) : (
+                <div className="vb-quotations-page__table-wrapper vb-surface">
+                    <Table
+                        columns={columns}
+                        data={quotations}
+                        rowKey="id"
+                        loading={loading}
+                        onRowClick={handleRowClick}
+                        emptyState={{
+                            title: 'No quotations available',
+                            description: 'Try a broader search or update the active filters.',
+                        }}
+                    />
+                </div>
+            )}
+
+            {!loading && totalPages > 1 && (
+                <div className="vb-quotations-page__pagination">
+                    <button
+                        type="button"
+                        className="vb-pagination-btn"
+                        onClick={() => setPage(Math.max(1, page - 1))}
+                        disabled={page === 1}
+                    >
+                        &larr; Previous
+                    </button>
+                    <span className="vb-pagination-text">Page {page} of {totalPages} ({total} total)</span>
+                    <button
+                        type="button"
+                        className="vb-pagination-btn"
+                        onClick={() => setPage(Math.min(totalPages, page + 1))}
+                        disabled={page === totalPages}
+                    >
+                        Next &rarr;
+                    </button>
+                </div>
+            )}
+
+            <Modal
+                open={Boolean(selectedQuotation) || detailsLoading}
+                onClose={() => setSelectedQuotation(null)}
+                title={selectedQuotation ? `Quotation #${selectedQuotation.id}` : 'Loading quotation'}
+                size="lg"
+                footer={getModalFooter()}
+            >
+                {selectedQuotation ? (
+                    <div className="vb-quotation-details">
+                        <div className="vb-quotation-details__summary">
+                            <QuotationDetailsItem label="RFQ" value={selectedQuotation.rfqTitle} />
+                            <QuotationDetailsItem label="Vendor" value={selectedQuotation.companyName} />
+                            <QuotationDetailsItem label="Total" value={formatAmount(selectedQuotation.totalAmount)} />
+                            <QuotationDetailsItem label="Status" value={<QuotationStatusBadge status={selectedQuotation.status} />} />
+                            <QuotationDetailsItem label="Submitted" value={formatDate(selectedQuotation.submittedAt)} />
+                            <QuotationDetailsItem label="Notes" value={selectedQuotation.notes || 'No notes provided.'} />
+                        </div>
+
+                        <div className="vb-quotation-details__section">
+                            <h3 className="vb-quotation-details__section-title">Quotation Items</h3>
+                            <QuotationItemsTable items={selectedQuotation.items || []} />
+                        </div>
+                    </div>
+                ) : (
+                    <div className="vb-quotation-details__loading">
+                        <Loader text="Loading quotation details..." />
+                    </div>
+                )}
+            </Modal>
+
+            <Toast
+                open={toastConfig.open}
+                variant={toastConfig.variant}
+                title={toastConfig.title}
+                message={toastConfig.message}
+                onClose={closeToast}
+                duration={4200}
+                className="vb-toast-wrapper"
+            />
+        </div>
+    );
+};
+
+export default QuotationPage;

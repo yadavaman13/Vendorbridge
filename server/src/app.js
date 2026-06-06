@@ -17,6 +17,10 @@ import quotationsRoutes from './routes/quotations.routes.js';
 
 const app = express();
 
+const isLocalDevOrigin = (origin) =>
+    typeof origin === 'string' &&
+    /^http:\/\/(localhost|127\.0\.0\.1):5173$/.test(origin);
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(

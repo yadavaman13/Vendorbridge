@@ -1,4 +1,4 @@
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq, sql, isNull } from "drizzle-orm";
 import { db } from "../config/database.js";
 import { users } from "../db/schema/users.js";
 
@@ -33,10 +33,11 @@ async function getUsers({ page = 1, limit = 10 } = {}) {
         updatedAt: users.updatedAt,
       })
       .from(users)
+      .where(isNull(users.deletedAt))
       .orderBy(desc(users.createdAt))
       .limit(safeLimit)
       .offset(offset),
-    db.select({ total: sql`count(*)::int` }).from(users),
+    db.select({ total: sql`count(*)::int` }).from(users).where(isNull(users.deletedAt)),
   ]);
 
   return {
@@ -63,7 +64,7 @@ async function getUserById(userId) {
       updatedAt: users.updatedAt,
     })
     .from(users)
-    .where(eq(users.id, userId))
+    .where(eq(users.id, userId), isNull(users.deletedAt))
     .limit(1);
 
   return result[0] || null;
@@ -111,6 +112,68 @@ async function updateUserRole({ userId, role }) {
   const result = await db
     .update(users)
     .set({ role, updatedAt: new Date() })
+    .where(eq(users.id, userId))
+    .returning({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      phone: users.phone,
+      role: users.role,
+      profilePicture: users.profilePicture,
+      createdAt: users.createdAt,
+      deletedAt: users.deletedAt,
+      isActive: users.isActive,
+      isVerified: users.isVerified,
+      updatedAt: users.updatedAt,
+    });
+
+  return result[0] || null;
+}
+
+async function updateUser({ userId, name, email, phone, role }) {
+  const updatePayload = { updatedAt: new Date() };
+
+  if (typeof name === "string") {
+    updatePayload.name = name.trim();
+  }
+
+  if (typeof email === "string") {
+    updatePayload.email = email.trim().toLowerCase();
+  }
+
+  if (typeof phone === "string") {
+    updatePayload.phone = phone.trim();
+  }
+
+  if (typeof role === "string") {
+    updatePayload.role = role.trim().toUpperCase();
+  }
+
+  const result = await db
+    .update(users)
+    .set(updatePayload)
+    .where(eq(users.id, userId))
+    .returning({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      phone: users.phone,
+      role: users.role,
+      profilePicture: users.profilePicture,
+      createdAt: users.createdAt,
+      deletedAt: users.deletedAt,
+      isActive: users.isActive,
+      isVerified: users.isVerified,
+      updatedAt: users.updatedAt,
+    });
+
+  return result[0] || null;
+}
+
+async function softDeleteUser(userId) {
+  const result = await db
+    .update(users)
+    .set({ deletedAt: new Date(), isActive: false, updatedAt: new Date() })
     .where(eq(users.id, userId))
     .returning({
       id: users.id,
