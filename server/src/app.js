@@ -7,12 +7,23 @@ import authRoutes from './routes/auth.routes.js';
 
 const app = express();
 
+const isLocalDevOrigin = (origin) =>
+    typeof origin === 'string' &&
+    /^http:\/\/(localhost|127\.0\.0\.1):5173$/.test(origin);
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(
     cors({
-        origin: envConfig.CLIENT_ORIGINS,
+        origin(origin, callback) {
+            if (!origin || envConfig.isAllowedClientOrigin(origin) || isLocalDevOrigin(origin)) {
+                return callback(null, true);
+            }
+
+            return callback(new Error(`CORS blocked for origin: ${origin}`), false);
+        },
         credentials: true,
+        optionsSuccessStatus: 200,
     }),
 );
 app.use(morgan('combined')); //  Logging middleware for better debugging

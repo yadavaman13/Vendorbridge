@@ -106,11 +106,11 @@
     &.error {
         .form-input {
             border-color: var(--danger);
-            box-shadow: 0 0 0 3px var(--danger);
+            box-shadow: 0 0 0 1px var(--danger);
 
             &:focus {
                 border-color: var(--danger);
-                box-shadow: 0 0 0 4px var(--danger);
+                box-shadow: 0 0 0 2px var(--danger);
             }
         }
 

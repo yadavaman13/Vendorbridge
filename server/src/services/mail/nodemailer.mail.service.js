@@ -10,7 +10,7 @@ if (shouldInitNodeMailer) {
         service: 'gmail',
         auth: {
             type: 'OAuth2',
-            user: envConfig.GOOGLE_USER,
+            user: envConfig.GOOGLE_SENDER_EMAIL,
             clientId: envConfig.GOOGLE_CLIENT_ID,
             clientSecret: envConfig.GOOGLE_CLIENT_SECRET,
             refreshToken: envConfig.GOOGLE_REFRESH_TOKEN,
@@ -35,7 +35,7 @@ async function sendEmailWithNodeMailer({ to, subject, html, text }) {
     }
 
     const mailOptions = {
-        from: envConfig.GOOGLE_USER,
+        from: envConfig.GOOGLE_SENDER_EMAIL,
         to,
         subject,
         html,

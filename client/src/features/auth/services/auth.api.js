@@ -1,13 +1,20 @@
 import axios from 'axios';
 
+const API_BASE_URL =
+    import.meta.env.DEV
+        ? '/api'
+        : import.meta.env.VITE_API_URL ||
+          'https://cohort2-0-backend-1-kphk.onrender.com';
+const API_PATH_PREFIX = import.meta.env.DEV ? '' : '/api';
+
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL,
+    baseURL: API_BASE_URL,
     withCredentials: true,
 });
 
 export async function register({ name, email, phone, role, password }) {
     try {
-        const response = await api.post('/api/auth/register', {
+        const response = await api.post(`${API_PATH_PREFIX}/auth/register`, {
             name,
             email,
             phone,
@@ -23,7 +30,7 @@ export async function register({ name, email, phone, role, password }) {
 
 export async function login({ email, password }) {
     try {
-        const response = await api.post('/api/auth/login', {
+        const response = await api.post(`${API_PATH_PREFIX}/auth/login`, {
             email,
             password,
         });
@@ -35,7 +42,7 @@ export async function login({ email, password }) {
 
 export async function verifyEmail({ email, otp }) {
     try {
-        const response = await api.post('/api/auth/verify-email', {
+        const response = await api.post(`${API_PATH_PREFIX}/auth/verify-email`, {
             email,
             otp,
         });
@@ -47,7 +54,7 @@ export async function verifyEmail({ email, otp }) {
 
 export async function resendOtp({ email }) {
     try {
-        const response = await api.post('/api/auth/resend-otp', {
+        const response = await api.post(`${API_PATH_PREFIX}/auth/resend-otp`, {
             email,
         });
 
@@ -58,7 +65,7 @@ export async function resendOtp({ email }) {
 }
 
 export async function requestPasswordReset({ email }) {
-    const response = await api.post('/api/auth/forgot-password', {
+    const response = await api.post(`${API_PATH_PREFIX}/auth/forgot-password`, {
         email,
     });
 
@@ -66,7 +73,7 @@ export async function requestPasswordReset({ email }) {
 }
 
 export async function resetPassword({ email, otp, password, confirmPassword }) {
-    const response = await api.post('/api/auth/reset-password', {
+    const response = await api.post(`${API_PATH_PREFIX}/auth/reset-password`, {
         email,
         otp,
         password,
@@ -78,7 +85,7 @@ export async function resetPassword({ email, otp, password, confirmPassword }) {
 
 export async function logout() {
     try {
-        await api.post('/api/auth/logout');
+        await api.post(`${API_PATH_PREFIX}/auth/logout`);
     } catch (err) {
         console.error('Logout Failed', err);
     }
@@ -86,7 +93,7 @@ export async function logout() {
 
 export async function getMe() {
     try {
-        const response = await api.get('/api/auth/get-me');
+        const response = await api.get(`${API_PATH_PREFIX}/auth/get-me`);
         return response.data;
     } catch (err) {
         console.error('Failed to fetch user data', err);

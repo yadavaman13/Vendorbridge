@@ -37,9 +37,32 @@ const confirmPasswordValidator = body("confirmPassword")
   .custom((value, { req }) => value === req.body.password)
   .withMessage("Passwords do not match.");
 
+const roleValidator = body("role")
+  .trim()
+  .notEmpty()
+  .withMessage("Role is required.")
+  .isIn(["ADMIN", "PROCUREMENT_OFFICER", "MANAGER", "VENDOR"])
+  .withMessage("Valid role is required.");
+
+const phoneValidator = body("phone")
+  .trim()
+  .notEmpty()
+  .withMessage("Phone number is required.")
+  .isMobilePhone()
+  .withMessage("Valid phone number is required.");
+
 const registerValidator = [
   body("name").trim().notEmpty().withMessage("Name is required."),
   emailValidator,
+  passwordValidator,
+  validateRequest,
+];
+
+const publicRegisterValidator = [
+  body("name").trim().notEmpty().withMessage("Name is required."),
+  emailValidator,
+  phoneValidator,
+  roleValidator,
   passwordValidator,
   validateRequest,
 ];
@@ -90,6 +113,7 @@ const resetPasswordValidator = [
 export {
   validateRequest,
   registerValidator,
+  publicRegisterValidator,
   loginValidator,
   forgotPasswordValidator,
   resetPasswordValidator,

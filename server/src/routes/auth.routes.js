@@ -13,6 +13,7 @@ import {
 } from "../controllers/auth.controller.js";
 import {
   registerValidator,
+  publicRegisterValidator,
   vendorRegisterValidator,
   loginValidator,
   forgotPasswordValidator,
@@ -31,7 +32,7 @@ const authRoutes = Router();
  * @description Register a user
  * @access Public
  */
-authRoutes.post("/register", vendorRegisterValidator, registerUserController);
+authRoutes.post("/register", publicRegisterValidator, registerUserController);
 
 /**
  * @route POST /api/auth/login
