@@ -47,39 +47,57 @@ The repository is split into two main folders:
 
 ```
 Vendorbridge/
-  README.md
-  client/
-    package.json
-    vite.config.js
-    src/
-      App.jsx
-      main.jsx
-      app.routes.jsx
-      features/
-        auth/
-        dashboard/
-        manager/
-        vendors/
-        quotations/
-        purchase-order/
-        approvals/
-        activity/
-        reports/
-        shared/
-  server/
-    package.json
-    server.js
-    src/
-      app.js
-      config/
-      controllers/
-      db/
-      middlewares/
-      routes/
-      services/
-      utils/
-      validators/
-    .env.example
+├── .git/
+├── .gitignore
+├── README.md
+├── client/
+│   ├── .gitignore
+│   ├── dist/
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── node_modules/
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── README.md
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── app.routes.jsx
+│   │   ├── features/
+│   │   │   ├── activity/
+│   │   │   ├── approvals/
+│   │   │   ├── auth/
+│   │   │   ├── dashboard/
+│   │   │   ├── manager/
+│   │   │   ├── purchase-order/
+│   │   │   ├── quotations/
+│   │   │   ├── rfqs/
+│   │   │   ├── reports/
+│   │   │   ├── shared/
+│   │   │   ├── users/
+│   │   │   └── vendors/
+│   │   ├── index.scss
+│   │   └── main.jsx
+│   └── vite.config.js
+└── server/
+    ├── .env
+    ├── .env.example
+    ├── drizzle/
+    ├── drizzle.config.js
+    ├── jsconfig.json
+    ├── node_modules/
+    ├── package-lock.json
+    ├── package.json
+    ├── server.js
+    └── src/
+        ├── app.js
+        ├── config/
+        ├── controllers/
+        ├── db/
+        ├── middlewares/
+        ├── routes/
+        ├── services/
+        ├── utils/
+        └── validators/
 ```
 
 ## Prerequisites
@@ -182,13 +200,13 @@ http://localhost:5173
 - Ensure Vite proxy in `client/vite.config.js` is configured
 - Check browser network logs for requests to `/api`
 
-##  Recommended Tools
+## Recommended Tools
 
 - React DevTools
 - Postman or Insomnia for API testing
 - PostgreSQL client for database validation
 
-##  Contribution
+## Contribution
 
 If you want to contribute, please follow these steps:
 
@@ -199,6 +217,6 @@ If you want to contribute, please follow these steps:
 
 ---
 
-##  License
+## License
 
 This project does not include a license in the current repository. Add a license file if you want to publish or share the code publicly.
