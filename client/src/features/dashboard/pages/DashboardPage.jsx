@@ -22,7 +22,7 @@ const DashboardPage = () => {
     // Calculate display metrics based on backend summary, with fallbacks matching wireframe
     let activeRfqs = 12;
     let pendingApprovals = 5;
-    let poVolume = '$ 2.3L';
+    let poVolume = '₹ 2.3L';
     let overdueInvoicesCount = 3;
 
     if (summary) {
@@ -46,7 +46,7 @@ const DashboardPage = () => {
             // Only override if the database actually has records, to maintain premium default view
             if (summary.rfqs?.length > 0) activeRfqs = rfqsCount;
             if (summary.approvals?.length > 0) pendingApprovals = approvalsCount;
-            if (summary.purchaseOrders?.length > 0) poVolume = `$ ${(posCount * 45).toFixed(1)}k`;
+            if (summary.purchaseOrders?.length > 0) poVolume = `₹ ${(posCount * 45).toFixed(1)}k`;
             if (summary.invoices?.length > 0) overdueInvoicesCount = invoicesCount;
         }
     }

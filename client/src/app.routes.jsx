@@ -9,6 +9,9 @@ import RootLayout from './features/shared/components/RootLayout';
 import DashboardPage from './features/dashboard/pages/DashboardPage';
 import VendorsPage from './features/vendors/pages/VendorsPage';
 import VendorProfilePage from './features/vendors/pages/VendorProfilePage';
+import QuotationPage from './features/quotations/pages/QuotationsPage';
+import UsersPage from './features/users/pages/UsersPage';
+import ReportsPage from './features/reports/pages/ReportsPage';
 
 // Simple reusable placeholder for sidebar paths not yet fully built
 const PlaceholderPage = ({ title }) => {
@@ -47,11 +50,15 @@ export const router = createBrowserRouter([
             },
             {
                 path: 'rfqs',
-                element: <PlaceholderPage title="RFQ's" />,
+                element: <PlaceholderPage title="RFQ's" />, 
             },
             {
                 path: 'quotations',
-                element: <PlaceholderPage title="Quotations" />,
+                element: <QuotationPage />,
+            },
+            {
+                path: 'users',
+                element: <UsersPage />,
             },
             {
                 path: 'approvals',
@@ -67,7 +74,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: 'reports',
-                element: <PlaceholderPage title="Reports" />,
+                element: <ReportsPage />,
             },
             {
                 path: 'activity',

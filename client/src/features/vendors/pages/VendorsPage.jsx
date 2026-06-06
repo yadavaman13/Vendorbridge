@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useVendors } from '../hooks/useVendors';
@@ -27,8 +27,27 @@ const VendorsPage = () => {
     } = useVendors();
 
     const [statusFilter, setStatusFilter] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [toastConfig, setToastConfig] = useState({ open: false, variant: 'info', title: '', message: '' });
+
+    const filteredVendors = useMemo(() => {
+        const vendorList = vendors || [];
+        const normalizedTerm = searchTerm.trim().toLowerCase();
+        if (!normalizedTerm) return vendorList;
+
+        return vendorList.filter((vendor) => {
+            const companyName = vendor.companyName?.toLowerCase() || '';
+            const gstNumber = vendor.gstNumber?.toLowerCase() || '';
+            const categoryName = vendor.category?.name?.toLowerCase() || '';
+            const contactName = vendor.user?.name?.toLowerCase() || '';
+            const contactEmail = vendor.user?.email?.toLowerCase() || '';
+
+            return [companyName, gstNumber, categoryName, contactName, contactEmail].some((value) =>
+                value.includes(normalizedTerm)
+            );
+        });
+    }, [vendors, searchTerm]);
 
     // Fetch vendors on load and on page/filter change
     const isVendorUser = user?.role === 'VENDOR';
@@ -52,6 +71,14 @@ const VendorsPage = () => {
     const handleFilterChange = (status) => {
         setStatusFilter(status);
         setCurrentPage(1); // reset page on filter change
+    };
+
+    const handleSearchChange = (event) => {
+        setSearchTerm(event.target.value);
+    };
+
+    const clearSearch = () => {
+        setSearchTerm('');
     };
 
     const handlePageChange = (nextPage) => {
@@ -152,34 +179,48 @@ const VendorsPage = () => {
                 </p>
             </header>
 
-            {/* Toast Alerts */}
-            <div className="vb-toast-wrapper">
-                <Toast
-                    open={toastConfig.open}
-                    variant={toastConfig.variant}
-                    title={toastConfig.title}
-                    message={toastConfig.message}
-                    onClose={closeToast}
-                    duration={4000}
-                />
-            </div>
+            <div className="vb-vendors-page__toolbar vb-surface">
+                <div className="vb-vendors-page__search-box">
+                    <div className="vb-search-input-wrapper">
+                        <span className="vb-search-icon">🔍</span>
+                        <input
+                            id="vendor-search"
+                            type="search"
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                            placeholder="Search by vendor name, GST number, category or contact"
+                            className="vb-search-input"
+                        />
+                        {searchTerm && (
+                            <button
+                                type="button"
+                                className="vb-search-clear"
+                                onClick={clearSearch}
+                                aria-label="Clear search"
+                            >
+                                ×
+                            </button>
+                        )}
+                    </div>
+                    <span className="vb-search-summary">
+                        Showing {filteredVendors.length} of {total} vendors
+                    </span>
+                </div>
 
-            {/* Filter Tabs */}
-            <div className="vb-vendors-page__filters">
                 <div className="vb-filter-tabs">
                     <button
                         type="button"
                         className={`vb-filter-tab ${statusFilter === '' ? 'active' : ''}`}
                         onClick={() => handleFilterChange('')}
                     >
-                        All Vendors
+                        All
                     </button>
                     <button
                         type="button"
                         className={`vb-filter-tab ${statusFilter === 'PENDING' ? 'active' : ''}`}
                         onClick={() => handleFilterChange('PENDING')}
                     >
-                        Pending Onboarding
+                        Pending
                     </button>
                     <button
                         type="button"
@@ -207,13 +248,13 @@ const VendorsPage = () => {
                 <div className="vb-vendors-page__table-wrapper vb-surface">
                     <Table
                         columns={columns}
-                        data={vendors}
+                        data={filteredVendors}
                         rowKey="id"
                         loading={loading}
                         onRowClick={handleRowClick}
                         emptyState={{
                             title: 'No vendors found',
-                            description: 'No registered vendor matching the chosen status was found.'
+                            description: 'Try a different search term or clear the filters.'
                         }}
                     />
                 </div>

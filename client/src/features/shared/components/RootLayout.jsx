@@ -3,6 +3,7 @@ import { Outlet, Link } from 'react-router';
 import { useAuth } from '../../auth/hooks/useAuth';
 import Logout from '../../auth/components/LogoutButton';
 import Sidebar from './Sidebar';
+import AdminSidebar from './AdminSidebar';
 
 const RootLayout = () => {
     const { user } = useAuth();
@@ -27,7 +28,7 @@ const RootLayout = () => {
                 </div>
             </header>
             <div className="vb-app-body">
-                <Sidebar />
+                {user?.role === 'ADMIN' ? <AdminSidebar /> : <Sidebar />}
                 <main className="vb-main-content">
                     <Outlet />
                 </main>

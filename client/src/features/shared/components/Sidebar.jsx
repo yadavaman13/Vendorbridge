@@ -8,6 +8,7 @@ const Sidebar = () => {
   const location = useLocation();
   const { user } = useAuth();
   const isVendor = user?.role === 'VENDOR';
+  const isAdmin = user?.role === 'ADMIN';
 
   const items = [
     { label: 'Dashboard', path: '/dashboard' },
@@ -16,12 +17,13 @@ const Sidebar = () => {
       : { label: 'Vendors', path: '/vendors' },
     { label: "RFQ's", path: '/rfqs' },
     { label: 'Quotations', path: '/quotations' },
+    isAdmin && { label: 'Manage users', path: '/users' },
     { label: 'Approvals', path: '/approvals' },
     { label: 'Purchase orders', path: '/purchase-orders' },
     { label: 'Invoices', path: '/invoices' },
     { label: 'Reports', path: '/reports' },
     { label: 'Activity', path: '/activity' },
-  ];
+  ].filter(Boolean);
 
   const handleNav = (path) => {
     navigate(path);

@@ -12,60 +12,8 @@ const api = axios.create({
     withCredentials: true,
 });
 
-<<<<<<< HEAD
-export async function register({ name, email, phone, role, password }) {
-    try {
-        const response = await api.post(`${API_PATH_PREFIX}/auth/register`, {
-            name,
-            email,
-            phone,
-            role,
-            password,
-        });
-
-        return response.data;
-    } catch (err) {
-        throw err;
-    }
-}
-
-export async function login({ email, password }) {
-    try {
-        const response = await api.post(`${API_PATH_PREFIX}/auth/login`, {
-            email,
-            password,
-        });
-        return response.data;
-    } catch (error) {
-        throw new Error('Login Failed');
-    }
-}
-
-export async function verifyEmail({ email, otp }) {
-    try {
-        const response = await api.post(`${API_PATH_PREFIX}/auth/verify-email`, {
-            email,
-            otp,
-        });
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
-}
-
-export async function resendOtp({ email }) {
-    try {
-        const response = await api.post(`${API_PATH_PREFIX}/auth/resend-otp`, {
-            email,
-        });
-
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
-=======
 export async function register({ name, email, password, phone, companyName, gstNumber, categoryId, address }) {
-    const response = await api.post('/api/auth/register', {
+    const response = await api.post(`${API_PATH_PREFIX}/auth/register`, {
         name,
         email,
         password,
@@ -79,7 +27,7 @@ export async function register({ name, email, password, phone, companyName, gstN
 }
 
 export async function login({ email, password }) {
-    const response = await api.post('/api/auth/login', {
+    const response = await api.post(`${API_PATH_PREFIX}/auth/login`, {
         email,
         password,
     });
@@ -87,7 +35,7 @@ export async function login({ email, password }) {
 }
 
 export async function verifyEmail({ email, otp }) {
-    const response = await api.post('/api/auth/verify-email', {
+    const response = await api.post(`${API_PATH_PREFIX}/auth/verify-email`, {
         email,
         otp,
     });
@@ -95,11 +43,10 @@ export async function verifyEmail({ email, otp }) {
 }
 
 export async function resendOtp({ email }) {
-    const response = await api.post('/api/auth/resend-otp', {
+    const response = await api.post(`${API_PATH_PREFIX}/auth/resend-otp`, {
         email,
     });
     return response.data;
->>>>>>> ca22778df33d11b21d8d6653d241fdc13363a3fd
 }
 
 export async function requestPasswordReset({ email }) {

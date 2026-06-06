@@ -1,0 +1,105 @@
+@use '../../shared/styles/mixins' as *;
+
+.vb-reports-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--vb-space-4);
+    width: 100%;
+    margin-top: var(--vb-space-5);
+}
+
+.vb-report-card {
+    border-radius: var(--vb-radius-3xl);
+    padding: 1.75rem;
+    min-height: 240px;
+}
+
+.vb-report-card__title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+}
+
+.vb-report-summary {
+    display: grid;
+    gap: 1rem;
+}
+
+.vb-report-summary__item {
+    display: grid;
+    gap: 0.35rem;
+    background: rgba(250, 251, 255, 0.72);
+    border: 1px solid rgba(82, 95, 211, 0.12);
+    padding: 1rem 1.1rem;
+    border-radius: var(--vb-radius-xl);
+}
+
+.vb-report-summary__label {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+.vb-report-summary__value {
+    font-size: 1.35rem;
+    color: var(--text-main);
+}
+
+.vb-report-table-wrapper {
+    overflow-x: auto;
+}
+
+.vb-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 540px;
+}
+
+.vb-table th,
+.vb-table td {
+    text-align: left;
+    padding: 1rem 1rem;
+    border-bottom: 1px solid rgba(145, 158, 171, 0.12);
+}
+
+.vb-table th {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    letter-spacing: 0.01em;
+}
+
+.vb-empty-message {
+    padding: 1rem 0;
+    color: var(--text-muted);
+}
+
+.vb-report-breakdown {
+    display: grid;
+    gap: 1rem;
+}
+
+.vb-report-breakdown__row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.vb-report-breakdown dt,
+.vb-report-breakdown dd {
+    margin: 0;
+}
+
+.vb-report-breakdown dt {
+    color: var(--text-muted);
+}
+
+.vb-report-breakdown dd {
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+@media (max-width: 1120px) {
+    .vb-reports-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -111,13 +111,6 @@ const Register = () => {
         }
 
         if (fieldName === 'email') {
-<<<<<<< HEAD
-            if (!fieldValue.trim()) {
-                return 'Valid email is required.';
-            }
-
-=======
->>>>>>> ca22778df33d11b21d8d6653d241fdc13363a3fd
             return validateEmail(fieldValue, {
                 requiredMessage: 'Valid email is required.',
                 invalidMessage: 'Valid email is required.',
@@ -129,18 +122,7 @@ const Register = () => {
         }
 
         if (fieldName === 'phone') {
-<<<<<<< HEAD
             return validatePhone(fieldValue);
-        }
-
-        if (fieldName === 'role') {
-            return fieldValue?.trim() ? '' : 'Role is required.';
-=======
-            const trimmed = fieldValue.trim();
-            if (!trimmed) {
-                return 'Phone number is required.';
-            }
-            return /^\d{10}$/.test(trimmed) ? '' : 'Phone number must be exactly 10 digits.';
         }
 
         if (fieldName === 'companyName') {
@@ -157,7 +139,10 @@ const Register = () => {
 
         if (fieldName === 'categoryId') {
             return fieldValue ? '' : 'Category selection is required.';
->>>>>>> ca22778df33d11b21d8d6653d241fdc13363a3fd
+        }
+
+        if (fieldName === 'address') {
+            return fieldValue.trim() ? '' : 'Company address is required.';
         }
 
         return '';
@@ -169,14 +154,9 @@ const Register = () => {
             username: validateField('username', formValues.username),
             email: validateField('email', formValues.email),
             phone: validateField('phone', formValues.phone),
-            role: validateField('role', formValues.role),
             password: validateField('password', formValues.password),
-            phone: validateField('phone', formValues.phone),
         };
         setErrors(nextErrors);
-<<<<<<< HEAD
-        setTouched({ username: true, email: true, phone: true, role: true, password: true });
-=======
         setTouched((prev) => ({
             ...prev,
             username: true,
@@ -186,7 +166,6 @@ const Register = () => {
         }));
         return !nextErrors.username && !nextErrors.email && !nextErrors.password && !nextErrors.phone;
     };
->>>>>>> ca22778df33d11b21d8d6653d241fdc13363a3fd
 
     const validateStep2 = () => {
         const nextErrors = {
@@ -360,49 +339,6 @@ const Register = () => {
         } finally {
             setIsSubmitting(false);
         }
-<<<<<<< HEAD
-
-        if (result?.success) {
-            setErrors(createInitialErrors());
-            setTouched({ username: false, email: false, phone: false, role: false, password: false });
-            setFormValues({ username: '', email: '', phone: '', role: '', password: '' });
-            navigate('/verify-email', {
-                state: {
-                    email: formValues.email.trim().toLowerCase(),
-                    cooldownSeconds: 300,
-                },
-            });
-            return;
-        }
-
-        const nextErrors = createInitialErrors();
-
-        if (Array.isArray(result?.errors)) {
-            result.errors.forEach((fieldError) => {
-                const fieldName = mapServerFieldName(
-                    fieldError.path || fieldError.param || '',
-                );
-
-                if (fieldName && nextErrors[fieldName] !== undefined) {
-                    nextErrors[fieldName] =
-                        fieldError.msg || fieldError.message || result.message;
-                }
-            });
-        }
-
-        if (nextErrors.username || nextErrors.email || nextErrors.phone || nextErrors.role || nextErrors.password) {
-            setErrors(nextErrors);
-            setTouched({ username: true, email: true, phone: true, role: true, password: true });
-            return;
-        }
-
-        setToast({
-            visible: true,
-            type: 'error',
-            message: result?.message || 'Registration failed.',
-        });
-=======
->>>>>>> ca22778df33d11b21d8d6653d241fdc13363a3fd
     };
 
     return (
@@ -445,85 +381,6 @@ const Register = () => {
                     onSubmit={handleFormSubmit}
                     noValidate
                 >
-<<<<<<< HEAD
-                    <FormGroup
-                        label="Name"
-                        id="username"
-                        name="username"
-                        type="text"
-                        value={formValues.username}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        disabled={isBusy}
-                        hasError={Boolean(touched.username && errors.username)}
-                        errorMessage={touched.username ? errors.username : ''}
-                    />
-                    <FormGroup
-                        label="Email"
-                        id="email"
-                        name="email"
-                        type="email"
-                        value={formValues.email}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        disabled={isBusy}
-                        hasError={Boolean(touched.email && errors.email)}
-                        errorMessage={touched.email ? errors.email : ''}
-                    />
-                    <FormGroup
-                        label="Phone"
-                        id="phone"
-                        name="phone"
-                        type="tel"
-                        value={formValues.phone}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        disabled={isBusy}
-                        hasError={Boolean(touched.phone && errors.phone)}
-                        errorMessage={touched.phone ? errors.phone : ''}
-                    />
-                    <FormField
-                        id="role"
-                        name="role"
-                        type="select"
-                        value={formValues.role}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        disabled={isBusy}
-                        required
-                        options={[
-                            { value: 'ADMIN', label: 'Admin' },
-                            { value: 'PROCUREMENT_OFFICER', label: 'Procurement Officer' },
-                            { value: 'MANAGER', label: 'Manager' },
-                            { value: 'VENDOR', label: 'Vendor' },
-                        ]}
-                        placeholder="Select role"
-                        error={touched.role ? errors.role : ''}
-                    />
-                    <FormGroup
-                        label="Password"
-                        id="password"
-                        name="password"
-                        type="password"
-                        value={formValues.password}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        disabled={isBusy}
-                        hasError={Boolean(touched.password && errors.password)}
-                        errorMessage={touched.password ? errors.password : ''}
-                    />
-                    <PasswordMeter password={formValues.password} />
-
-                    <div className="auth-actions">
-                        <button
-                            className="btn btn-auth-submit auth-submit-btn"
-                            type="submit"
-                            disabled={isBusy}
-                        >
-                            {isBusy ? 'Registering...' : 'Register'}
-                        </button>
-                    </div>
-=======
                     {step === 1 && (
                         <div className="auth-form-grid animate-fade-in">
                             <FormGroup
@@ -667,7 +524,6 @@ const Register = () => {
                             </button>
                         </div>
                     )}
->>>>>>> ca22778df33d11b21d8d6653d241fdc13363a3fd
                 </form>
 
                 <p className="form-footer">

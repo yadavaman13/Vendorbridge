@@ -3,6 +3,8 @@ import {
   getUserById,
   getUsers,
   updateUserRole,
+  updateUser,
+  softDeleteUser,
 } from "../services/user.service.js";
 
 function parsePagination(query) {
@@ -120,4 +122,97 @@ async function updateUserRoleController(req, res) {
   }
 }
 
-export { listUsersController, getUserByIdController, updateUserRoleController };
+async function updateUserController(req, res) {
+  try {
+    const userId = Number.parseInt(req.params.id, 10);
+    const { name, email, phone } = req.body;
+
+    if (!name && !email && !phone) {
+      return sendResponse({
+        res,
+        statusCode: 400,
+        success: false,
+        message: "At least one field must be provided to update.",
+      });
+    }
+
+    const existingUser = await getUserById(userId);
+    if (!existingUser) {
+      return sendResponse({
+        res,
+        statusCode: 404,
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    const updatedUser = await updateUser({ userId, name, email, phone });
+
+    return sendResponse({
+      res,
+      statusCode: 200,
+      success: true,
+      message: "User updated successfully.",
+      data: { item: updatedUser },
+    });
+  } catch (error) {
+    console.error("updateUserController error:", error);
+    return sendResponse({
+      res,
+      statusCode: 500,
+      success: false,
+      message: "Failed to update user.",
+      error: "Internal server error",
+    });
+  }
+}
+
+async function deleteUserController(req, res) {
+  try {
+    const userId = Number.parseInt(req.params.id, 10);
+
+    if (req.user?.id === userId) {
+      return sendResponse({
+        res,
+        statusCode: 400,
+        success: false,
+        message: "You cannot delete your own account.",
+      });
+    }
+
+    const deletedUser = await softDeleteUser(userId);
+    if (!deletedUser) {
+      return sendResponse({
+        res,
+        statusCode: 404,
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    return sendResponse({
+      res,
+      statusCode: 200,
+      success: true,
+      message: "User deleted successfully.",
+      data: { item: deletedUser },
+    });
+  } catch (error) {
+    console.error("deleteUserController error:", error);
+    return sendResponse({
+      res,
+      statusCode: 500,
+      success: false,
+      message: "Failed to delete user.",
+      error: "Internal server error",
+    });
+  }
+}
+
+export {
+  listUsersController,
+  getUserByIdController,
+  updateUserRoleController,
+  updateUserController,
+  deleteUserController,
+};

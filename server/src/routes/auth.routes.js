@@ -14,7 +14,6 @@ import {
 import {
   registerValidator,
   publicRegisterValidator,
-  vendorRegisterValidator,
   loginValidator,
   forgotPasswordValidator,
   resetPasswordValidator,

@@ -15,27 +15,18 @@ export const useAuth = () => {
 
     const { loading, setLoading, user, setUser, error, setError } = context;
 
-<<<<<<< HEAD
-    const handleRegister = async ({ name, email, phone, role, password }) => {
-=======
     const handleRegister = async ({ name, email, password, phone, companyName, gstNumber, categoryId, address }) => {
->>>>>>> ca22778df33d11b21d8d6653d241fdc13363a3fd
         setLoading(true);
         setError(null);
 
         let data;
         try {
-<<<<<<< HEAD
+
             data = await register({ name, email, phone, role, password });
             console.log('Registration Failed', data);
-=======
-            data = await register({ name, email, password, phone, companyName, gstNumber, categoryId, address });
-            console.log('Registration Response', data);
->>>>>>> ca22778df33d11b21d8d6653d241fdc13363a3fd
-            if (data?.user) {
+
                 setUser(data.user);
                 sessionStorage.setItem('user', JSON.stringify(data.user));
-            }
 
             return data;
         } catch (err) {
