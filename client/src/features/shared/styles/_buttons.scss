@@ -24,14 +24,14 @@
 
     &.btn-primary {
         background-color: var(--primary);
-        color: #fff;
+        color: var(--on-primary);
 
         &:hover {
-            background-color: rgba(70, 138, 147, 0.88);
+            background-color: var(--primary-hover);
         }
 
         &:active {
-            background-color: rgba(70, 138, 147, 0.92);
+            background-color: var(--primary-hover);
         }
     }
 
@@ -59,17 +59,17 @@
 
     &.btn-auth-submit {
         width: 100%;
-        background-color: #11101f;
-        color: #fff;
+        background-color: var(--primary);
+        color: var(--on-primary);
         border-radius: 18px;
         padding: 14px 18px;
 
         &:hover {
-            background-color: rgba(17, 16, 31, 0.92);
+            background-color: var(--primary-hover);
         }
 
         &:active {
-            background-color: rgba(17, 16, 31, 0.96);
+            background-color: var(--primary-hover);
         }
     }
 }

@@ -10,7 +10,7 @@
         system-ui,
         -apple-system,
         sans-serif;
-    color: #fff;
+    color: var(--text-main);
 }
 
 html,
@@ -20,5 +20,5 @@ body {
 }
 
 body {
-    background-color: #111;
+    background-color: var(--bg-dark);
 }
