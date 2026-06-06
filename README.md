@@ -46,60 +46,243 @@ The repository is split into two main folders:
 ## Repository Structure
 
 ```
-Vendorbridge/
-├── .git/
+Vendorbridge
 ├── .gitignore
-├── README.md
-├── client/
+├── client
 │   ├── .gitignore
-│   ├── dist/
 │   ├── eslint.config.js
 │   ├── index.html
-│   ├── node_modules/
 │   ├── package-lock.json
 │   ├── package.json
 │   ├── README.md
-│   ├── src/
+│   ├── src
 │   │   ├── App.jsx
 │   │   ├── app.routes.jsx
-│   │   ├── features/
-│   │   │   ├── activity/
-│   │   │   ├── approvals/
-│   │   │   ├── auth/
-│   │   │   ├── dashboard/
-│   │   │   ├── manager/
-│   │   │   ├── purchase-order/
-│   │   │   ├── quotations/
-│   │   │   ├── rfqs/
-│   │   │   ├── reports/
-│   │   │   ├── shared/
-│   │   │   ├── users/
-│   │   │   └── vendors/
+│   │   ├── features
+│   │   │   ├── activity
+│   │   │   │   └── pages
+│   │   │   │       └── ActivityPage.jsx
+│   │   │   ├── approvals
+│   │   │   │   └── pages
+│   │   │   │       └── ApprovalsPage.jsx
+│   │   │   ├── auth
+│   │   │   │   ├── auth.context.jsx
+│   │   │   │   ├── components
+│   │   │   │   │   ├── FormGroup.jsx
+│   │   │   │   │   ├── LogoutButton.jsx
+│   │   │   │   │   ├── PasswordMeter.jsx
+│   │   │   │   │   └── ProtectedRoute.jsx
+│   │   │   │   ├── hooks
+│   │   │   │   │   ├── useAuth.js
+│   │   │   │   │   └── useVerifyEmail.js
+│   │   │   │   ├── pages
+│   │   │   │   │   ├── ForgotPassword.jsx
+│   │   │   │   │   ├── Login.jsx
+│   │   │   │   │   ├── Register.jsx
+│   │   │   │   │   └── VerifyEmail.jsx
+│   │   │   │   ├── services
+│   │   │   │   │   └── auth.api.js
+│   │   │   │   ├── styles
+│   │   │   │   │   ├── _form-group.scss
+│   │   │   │   │   ├── auth.scss
+│   │   │   │   │   ├── password-meter.scss
+│   │   │   │   │   └── verify-email.scss
+│   │   │   │   ├── useAuth.js
+│   │   │   │   └── utils
+│   │   │   │       └── validation.utils.js
+│   │   │   ├── dashboard
+│   │   │   │   ├── hooks
+│   │   │   │   │   └── useDashboard.js
+│   │   │   │   ├── pages
+│   │   │   │   │   └── DashboardPage.jsx
+│   │   │   │   ├── services
+│   │   │   │   │   └── dashboard.api.js
+│   │   │   │   └── styles
+│   │   │   │       └── dashboard.scss
+│   │   │   ├── manager
+│   │   │   │   ├── components
+│   │   │   │   │   ├── ManagerStatCard.jsx
+│   │   │   │   │   └── OfficerCard.jsx
+│   │   │   │   ├── pages
+│   │   │   │   │   └── ManagerDashboard.jsx
+│   │   │   │   ├── services
+│   │   │   │   │   └── manager.api.js
+│   │   │   │   └── styles
+│   │   │   │       └── manager-dashboard.scss
+│   │   │   ├── purchase-order
+│   │   │   │   ├── pages
+│   │   │   │   │   ├── InvoicesPage.jsx
+│   │   │   │   │   └── PurchaseOrderDashboard.jsx
+│   │   │   │   └── styles
+│   │   │   │       └── purchase-order.scss
+│   │   │   ├── quotations
+│   │   │   │   ├── hooks
+│   │   │   │   │   └── useQuotations.js
+│   │   │   │   ├── pages
+│   │   │   │   │   └── QuotationsPage.jsx
+│   │   │   │   ├── services
+│   │   │   │   │   └── quotations.api.js
+│   │   │   │   └── styles
+│   │   │   │       └── quotations.scss
+│   │   │   ├── reports
+│   │   │   │   ├── hooks
+│   │   │   │   │   └── useReports.js
+│   │   │   │   ├── pages
+│   │   │   │   │   └── ReportsPage.jsx
+│   │   │   │   ├── services
+│   │   │   │   │   └── reports.api.js
+│   │   │   │   └── styles
+│   │   │   │       └── reports.scss
+│   │   │   ├── rfqs
+│   │   │   │   └── pages
+│   │   │   │       └── RFQsPage.jsx
+│   │   │   ├── shared
+│   │   │   │   ├── components
+│   │   │   │   │   ├── AdminSidebar.jsx
+│   │   │   │   │   ├── Alert.jsx
+│   │   │   │   │   ├── EmptyState.jsx
+│   │   │   │   │   ├── FormField.jsx
+│   │   │   │   │   ├── index.js
+│   │   │   │   │   ├── Layout.jsx
+│   │   │   │   │   ├── Loader.jsx
+│   │   │   │   │   ├── Modal.jsx
+│   │   │   │   │   ├── RootLayout.jsx
+│   │   │   │   │   ├── Sidebar.jsx
+│   │   │   │   │   ├── Table.jsx
+│   │   │   │   │   └── Toast.jsx
+│   │   │   │   ├── pages
+│   │   │   │   │   ├── ComingSoon.jsx
+│   │   │   │   │   ├── DashboardNavbar.jsx
+│   │   │   │   │   ├── DashboardSidebar.jsx
+│   │   │   │   │   └── HomePage.jsx
+│   │   │   │   ├── services
+│   │   │   │   │   ├── api.js
+│   │   │   │   │   └── categories.api.js
+│   │   │   │   └── styles
+│   │   │   │       ├── _buttons.scss
+│   │   │   │       ├── _layout.scss
+│   │   │   │       ├── _mixins.scss
+│   │   │   │       ├── _pages.scss
+│   │   │   │       ├── _variables.scss
+│   │   │   │       ├── admin-sidebar.scss
+│   │   │   │       ├── button.scss
+│   │   │   │       ├── components.scss
+│   │   │   │       ├── home-page.scss
+│   │   │   │       ├── layout.scss
+│   │   │   │       └── sidebar.scss
+│   │   │   ├── users
+│   │   │   │   ├── hooks
+│   │   │   │   │   └── useUsers.js
+│   │   │   │   ├── pages
+│   │   │   │   │   └── UsersPage.jsx
+│   │   │   │   ├── services
+│   │   │   │   │   └── users.api.js
+│   │   │   │   └── styles
+│   │   │   │       └── users.scss
+│   │   │   └── vendors
+│   │   │       ├── hooks
+│   │   │       │   ├── useVendorProfile.js
+│   │   │       │   └── useVendors.js
+│   │   │       ├── pages
+│   │   │       │   ├── VendorProfilePage.jsx
+│   │   │       │   └── VendorsPage.jsx
+│   │   │       ├── services
+│   │   │       │   └── vendors.api.js
+│   │   │       └── styles
+│   │   │           └── vendors.scss
 │   │   ├── index.scss
 │   │   └── main.jsx
 │   └── vite.config.js
-└── server/
+├── README.md
+└── server
     ├── .env
     ├── .env.example
-    ├── drizzle/
+    ├── drizzle
+    │   ├── 0002_reset_integer_schema.sql
+    │   └── meta
+    │       ├── _journal.json
+    │       └── 0000_snapshot.json
     ├── drizzle.config.js
     ├── jsconfig.json
-    ├── node_modules/
     ├── package-lock.json
     ├── package.json
     ├── server.js
-    └── src/
+    └── src
         ├── app.js
-        ├── config/
-        ├── controllers/
-        ├── db/
-        ├── middlewares/
-        ├── routes/
-        ├── services/
-        ├── utils/
-        └── validators/
+        ├── config
+        │   ├── cache.js
+        │   ├── database.js
+        │   └── envConfig.js
+        ├── controllers
+        │   ├── activity-log.controller.js
+        │   ├── approval.controller.js
+        │   ├── auth.controller.js
+        │   ├── categories.controller.js
+        │   ├── invoice.controller.js
+        │   ├── purchase-order.controller.js
+        │   ├── quotation.controller.js
+        │   ├── quotations.controller.js
+        │   ├── rfqs.controller.js
+        │   ├── users.controller.js
+        │   └── vendors.controller.js
+        ├── db
+        │   ├── query
+        │   │   ├── activity-log.query.js
+        │   │   ├── approval.query.js
+        │   │   ├── invoice.query.js
+        │   │   ├── purchase-order.query.js
+        │   │   ├── quotation.query.js
+        │   │   ├── rfqs.query.js
+        │   │   └── vendor.query.js
+        │   └── schema
+        │       ├── activityLogs.js
+        │       ├── approvals.js
+        │       ├── categories.js
+        │       ├── enums.js
+        │       ├── invoices.js
+        │       ├── purchaseOrders.js
+        │       ├── quotations.js
+        │       ├── rfqs.js
+        │       ├── schema.js
+        │       ├── users.js
+        │       └── vendors.js
+        ├── middlewares
+        │   ├── auth.middleware.js
+        │   └── file.middleware.js
+        ├── routes
+        │   ├── activity-log.routes.js
+        │   ├── approval.routes.js
+        │   ├── auth.routes.js
+        │   ├── categories.routes.js
+        │   ├── invoice.routes.js
+        │   ├── purchase-order.routes.js
+        │   ├── quotation.routes.js
+        │   ├── quotations.routes.js
+        │   ├── rfqs.routes.js
+        │   ├── users.routes.js
+        │   └── vendors.routes.js
+        ├── services
+        │   ├── image.service.js
+        │   ├── mail
+        │   │   ├── gmail.mail.service.js
+        │   │   ├── mail.service.js
+        │   │   ├── mailjet.mail.service.js
+        │   │   └── nodemailer.mail.service.js
+        │   ├── pdf.service.js
+        │   ├── quotations.service.js
+        │   ├── rfqs.service.js
+        │   ├── user.service.js
+        │   └── vendors.service.js
+        ├── utils
+        │   ├── otp.utils.js
+        │   └── response.utlis.js
+        └── validators
+            ├── auth.validators.js
+            ├── categories.validators.js
+            ├── quotations.validators.js
+            ├── rfqs.validators.js
+            └── users.validators.js
 ```
-
 ## Prerequisites
 
 - Node.js 18+ (Node 22 recommended)
