@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { db } from "../config/database.js";
 import { users } from "../db/schema/users.js";
 
@@ -7,6 +7,63 @@ async function getUserByEmail(email) {
     .select()
     .from(users)
     .where(eq(users.email, email))
+    .limit(1);
+
+  return result[0] || null;
+}
+
+async function getUsers({ page = 1, limit = 10 } = {}) {
+  const safePage = Number.isFinite(page) && page > 0 ? page : 1;
+  const safeLimit = Number.isFinite(limit) && limit > 0 ? limit : 10;
+  const offset = (safePage - 1) * safeLimit;
+
+  const [items, totalResult] = await Promise.all([
+    db
+      .select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        phone: users.phone,
+        role: users.role,
+        profilePicture: users.profilePicture,
+        createdAt: users.createdAt,
+        deletedAt: users.deletedAt,
+        isActive: users.isActive,
+        isVerified: users.isVerified,
+        updatedAt: users.updatedAt,
+      })
+      .from(users)
+      .orderBy(desc(users.createdAt))
+      .limit(safeLimit)
+      .offset(offset),
+    db.select({ total: sql`count(*)::int` }).from(users),
+  ]);
+
+  return {
+    items,
+    total: totalResult[0]?.total ?? 0,
+    page: safePage,
+    limit: safeLimit,
+  };
+}
+
+async function getUserById(userId) {
+  const result = await db
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      phone: users.phone,
+      role: users.role,
+      profilePicture: users.profilePicture,
+      createdAt: users.createdAt,
+      deletedAt: users.deletedAt,
+      isActive: users.isActive,
+      isVerified: users.isVerified,
+      updatedAt: users.updatedAt,
+    })
+    .from(users)
+    .where(eq(users.id, userId))
     .limit(1);
 
   return result[0] || null;
@@ -50,6 +107,28 @@ async function updateUserPassword({ userId, newPassword }) {
     .where(eq(users.id, userId));
 }
 
+async function updateUserRole({ userId, role }) {
+  const result = await db
+    .update(users)
+    .set({ role, updatedAt: new Date() })
+    .where(eq(users.id, userId))
+    .returning({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      phone: users.phone,
+      role: users.role,
+      profilePicture: users.profilePicture,
+      createdAt: users.createdAt,
+      deletedAt: users.deletedAt,
+      isActive: users.isActive,
+      isVerified: users.isVerified,
+      updatedAt: users.updatedAt,
+    });
+
+  return result[0] || null;
+}
+
 async function markEmailAsVerified(email) {
   await db
     .update(users)
@@ -82,7 +161,10 @@ async function getUserVerificationStatus(email) {
 export {
   createUser,
   getUserByEmail,
+  getUsers,
+  getUserById,
   updateUserPassword,
+  updateUserRole,
   markEmailAsVerified,
   getUserVerificationStatus,
 };
