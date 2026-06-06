@@ -11,13 +11,16 @@ import jwt from "jsonwebtoken";
 import envConfig from "../config/envConfig.js";
 import {
   getForgotPasswordOtpHtml,
+  getOtpHtml,
   normalizeEmail,
   OTP_PURPOSES,
   resendOtp,
   verifyOtp,
+  issueOtp,
 } from "../utils/otp.utils.js";
 import redis from "../config/cache.js";
 import { users } from "../db/schema/users.js";
+import { vendors } from "../db/schema/vendors.js";
 
 const ALLOWED_ROLES = new Set([
   "ADMIN",
@@ -122,6 +125,28 @@ async function registerUserController(req, res) {
         isVerified: false,
       })
       .returning();
+
+    await db
+      .insert(vendors)
+      .values({
+        userId: createdUser.id,
+        companyName: req.body.companyName.trim(),
+        gstNumber: req.body.gstNumber.trim(),
+        categoryId: parseInt(req.body.categoryId),
+        address: req.body.address ? req.body.address.trim() : null,
+        status: "PENDING",
+      });
+
+    try {
+      await issueOtp({
+        email: normalizedEmail,
+        purpose: OTP_PURPOSES.VERIFY_EMAIL,
+        subject: "Verify your email address",
+        buildHtml: getOtpHtml,
+      });
+    } catch (otpError) {
+      console.error("Error generating verification OTP during registration:", otpError);
+    }
 
     return sendResponse({
       res,
