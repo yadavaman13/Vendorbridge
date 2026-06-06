@@ -135,134 +135,17 @@ const allowRoles = (...roles) => createRoleGuard(roles);
 const isAdmin = createRoleGuard(['ADMIN']);
 const isManager = createRoleGuard(['MANAGER']);
 const isProcurementOfficer = createRoleGuard(['PROCUREMENT_OFFICER']);
-const isAdminOrProcurementOfficer = createRoleGuard([
-    'ADMIN',
-    'PROCUREMENT_OFFICER',
-]);
+const isOfficerOrAdmin = createRoleGuard(['ADMIN', 'PROCUREMENT_OFFICER']);
+const isAdminOrProcurementOfficer = isOfficerOrAdmin;
+const isVendor = createRoleGuard(['VENDOR']);
 
-<<<<<<< HEAD
 export {
     authUser,
     allowRoles,
     isAdmin,
     isManager,
     isProcurementOfficer,
+    isOfficerOrAdmin,
     isAdminOrProcurementOfficer,
+    isVendor,
 };
-=======
-    const { getUserByEmail } = await import("../services/user.service.js");
-    const user = await getUserByEmail(req.user.email);
-    if (!user) {
-      return res
-        .status(404)
-        .json({ message: "User not found", success: false });
-    }
-
-    if (user.role !== "ADMIN") {
-      return res
-        .status(403)
-        .json({ message: "Forbidden. Admins only.", success: false });
-    }
-
-    req.user = { ...req.user, role: user.role, id: user.id };
-    next();
-  } catch (err) {
-    console.error("isAdmin error:", err);
-    return res
-      .status(500)
-      .json({ message: "Internal server error", success: false });
-  }
-}
-
-async function isManager(req, res, next) {
-  try {
-    if (!req.user || !req.user.email) {
-      return res.status(401).json({ message: "Unauthorized", success: false });
-    }
-
-    const { getUserByEmail } = await import("../services/user.service.js");
-    const user = await getUserByEmail(req.user.email);
-    if (!user) {
-      return res
-        .status(404)
-        .json({ message: "User not found", success: false });
-    }
-
-    if (user.role !== "MANAGER") {
-      return res
-        .status(403)
-        .json({ message: "Forbidden. Managers only.", success: false });
-    }
-
-    req.user = { ...req.user, role: user.role, id: user.id };
-    next();
-  } catch (err) {
-    console.error("isManager error:", err);
-    return res
-      .status(500)
-      .json({ message: "Internal server error", success: false });
-  }
-}
-
-async function isOfficerOrAdmin(req, res, next) {
-  try {
-    if (!req.user || !req.user.email) {
-      return res.status(401).json({ message: "Unauthorized", success: false });
-    }
-
-    const { getUserByEmail } = await import("../services/user.service.js");
-    const user = await getUserByEmail(req.user.email);
-    if (!user) {
-      return res
-        .status(404)
-        .json({ message: "User not found", success: false });
-    }
-
-    if (user.role !== "ADMIN" && user.role !== "PROCUREMENT_OFFICER") {
-      return res
-        .status(403)
-        .json({ message: "Forbidden. Admins or Procurement Officers only.", success: false });
-    }
-
-    req.user = { ...req.user, role: user.role, id: user.id };
-    next();
-  } catch (err) {
-    console.error("isOfficerOrAdmin error:", err);
-    return res
-      .status(500)
-      .json({ message: "Internal server error", success: false });
-  }
-}
-
-async function isVendor(req, res, next) {
-  try {
-    if (!req.user || !req.user.email) {
-      return res.status(401).json({ message: "Unauthorized", success: false });
-    }
-
-    const { getUserByEmail } = await import("../services/user.service.js");
-    const user = await getUserByEmail(req.user.email);
-    if (!user) {
-      return res
-        .status(404)
-        .json({ message: "User not found", success: false });
-    }
-
-    if (user.role !== "VENDOR") {
-      return res
-        .status(403)
-        .json({ message: "Forbidden. Vendors only.", success: false });
-    }
-
-    req.user = { ...req.user, role: user.role, id: user.id };
-    next();
-  } catch (err) {
-    console.error("isVendor error:", err);
-    return res
-      .status(500)
-      .json({ message: "Internal server error", success: false });
-  }
-}
-
-export { authUser, isAdmin, isManager, isOfficerOrAdmin, isVendor };
->>>>>>> 4599a4889d72a293fb2fd0a99a4eafb8b1d3b98f

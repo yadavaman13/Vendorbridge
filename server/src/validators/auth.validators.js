@@ -48,7 +48,6 @@ const registerValidator = [
 ];
 
 const vendorRegisterValidator = [
-<<<<<<< HEAD
     body('name').trim().notEmpty().withMessage('Name is required.'),
     emailValidator,
     passwordValidator,
@@ -67,35 +66,10 @@ const vendorRegisterValidator = [
         .isLength({ min: 5 })
         .withMessage('GST number is required.'),
     body('categoryId')
-        .trim()
         .notEmpty()
-        .isUUID()
-        .withMessage('Valid categoryId (UUID) is required.'),
+        .isInt()
+        .withMessage('Valid categoryId (integer) is required.'),
     validateRequest,
-=======
-  body("name").trim().notEmpty().withMessage("Name is required."),
-  emailValidator,
-  passwordValidator,
-  body("phone")
-    .trim()
-    .notEmpty()
-    .isMobilePhone()
-    .withMessage("Valid phone number is required."),
-  body("companyName")
-    .trim()
-    .notEmpty()
-    .withMessage("Company name is required."),
-  body("gstNumber")
-    .trim()
-    .notEmpty()
-    .isLength({ min: 5 })
-    .withMessage("GST number is required."),
-  body("categoryId")
-    .notEmpty()
-    .isInt()
-    .withMessage("Valid categoryId (integer) is required."),
-  validateRequest,
->>>>>>> 4599a4889d72a293fb2fd0a99a4eafb8b1d3b98f
 ];
 
 const loginValidator = [emailValidator, passwordValidator, validateRequest];
