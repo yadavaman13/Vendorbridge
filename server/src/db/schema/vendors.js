@@ -1,5 +1,7 @@
 import {
   pgTable,
+  serial,
+  integer,
   uuid,
   varchar,
   timestamp,
@@ -11,9 +13,10 @@ import { categories } from "./categories.js";
 import { approvalStatusEnum } from "./enums.js";
 
 export const vendors = pgTable("vendors", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: serial("id").primaryKey(),
 
-  userId: uuid("user_id")
+  userId: integer("user_id")
+    .unique()
     .notNull()
     .references(() => users.id, {
       onDelete: "cascade",
@@ -25,23 +28,13 @@ export const vendors = pgTable("vendors", {
 
   gstNumber: varchar("gst_number", {
     length: 15,
-  }).notNull(),
+  })
+    .unique()
+    .notNull(),
 
-  categoryId: uuid("category_id")
+  categoryId: integer("category_id")
     .notNull()
     .references(() => categories.id),
-
-  contactPerson: varchar("contact_person", {
-    length: 100,
-  }),
-
-  contactEmail: varchar("contact_email", {
-    length: 100,
-  }),
-
-  contactPhone: varchar("contact_phone", {
-    length: 15,
-  }),
 
   address: text("address"),
 
@@ -49,5 +42,8 @@ export const vendors = pgTable("vendors", {
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
 
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
 });

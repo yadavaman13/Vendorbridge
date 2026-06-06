@@ -31,12 +31,41 @@ export const approvalStatusEnum = pgEnum("approval_status", [
 export const poStatusEnum = pgEnum("po_status", [
   "CREATED",
   "SENT",
-  "ACCEPTED",
+  "ACKNOWLEDGED",
+  "PARTIALLY_FULFILLED",
+  "COMPLETED",
   "CANCELLED",
 ]);
 
 export const invoiceStatusEnum = pgEnum("invoice_status", [
   "GENERATED",
-  "EMAILED",
+  "SENT",
+  "VIEWED",
   "PAID",
+  "PARTIALLY_PAID",
+  "OVERDUE",
+  "CANCELLED",
+]);
+
+export const activityActionTypeEnum = pgEnum("activity_action_type", [
+  "CREATE",
+  "UPDATE",
+  "DELETE",
+  "VIEW",
+  "LOGIN",
+  "LOGOUT",
+  "APPROVE",
+  "REJECT",
+  "SEND",
+  "RECEIVE",
+]);
+
+export const activityEntityTypeEnum = pgEnum("activity_entity_type", [
+  "USER",
+  "VENDOR",
+  "RFQ",
+  "QUOTATION",
+  "PURCHASE_ORDER",
+  "INVOICE",
+  "CATEGORY",
 ]);

@@ -11,8 +11,6 @@ import jwt from "jsonwebtoken";
 import envConfig from "../config/envConfig.js";
 import {
   getForgotPasswordOtpHtml,
-  getOtpHtml,
-  issueOtp,
   normalizeEmail,
   OTP_PURPOSES,
   resendOtp,
@@ -20,7 +18,6 @@ import {
 } from "../utils/otp.utils.js";
 import redis from "../config/cache.js";
 import { users } from "../db/schema/users.js";
-import { vendors } from "../db/schema/vendors.js";
 
 const ALLOWED_ROLES = new Set([
   "ADMIN",
@@ -87,42 +84,12 @@ async function sendTokenResponse({ res, user, vendor, message }) {
  */
 async function registerUserController(req, res) {
   try {
-    const {
-      email,
-      password,
-      name,
-      phone,
-      role,
-      companyName,
-      gstNumber,
-      categoryId,
-      contactPerson,
-      contactEmail,
-      contactPhone,
-      address,
-    } = req.body || {};
+    const { email, password, name, phone } = req.body || {};
     const normalizedEmail =
       typeof email === "string" ? email.trim().toLowerCase() : "";
     const passwordValue = typeof password === "string" ? password : "";
     const nameValue = typeof name === "string" ? name.trim() : null;
     const phoneValue = typeof phone === "string" ? phone.trim() : "";
-    // Force public registrations to vendor only. Other roles must be created by admin/manager.
-    const resolvedRole = "VENDOR";
-    const companyNameValue =
-      typeof companyName === "string" ? companyName.trim() : "";
-    const gstNumberValue =
-      typeof gstNumber === "string" ? gstNumber.trim() : "";
-    const categoryIdValue =
-      typeof categoryId === "string" ? categoryId.trim() : "";
-    const contactPersonValue =
-      typeof contactPerson === "string" ? contactPerson.trim() : null;
-    const contactEmailValue =
-      typeof contactEmail === "string"
-        ? contactEmail.trim().toLowerCase()
-        : null;
-    const contactPhoneValue =
-      typeof contactPhone === "string" ? contactPhone.trim() : null;
-    const addressValue = typeof address === "string" ? address.trim() : null;
 
     if (!normalizedEmail || !passwordValue || !phoneValue) {
       return sendResponse({
@@ -131,19 +98,6 @@ async function registerUserController(req, res) {
         message: "Email, password, and phone are required.",
         success: false,
       });
-    }
-
-    const isVendorRegistration = true;
-    if (isVendorRegistration) {
-      if (!companyNameValue || !gstNumberValue || !categoryIdValue) {
-        return sendResponse({
-          res,
-          statusCode: 400,
-          message:
-            "Vendor registration requires company name, GST number, and category ID.",
-          success: false,
-        });
-      }
     }
 
     const existingUser = await getUserByEmail(normalizedEmail);
@@ -157,65 +111,32 @@ async function registerUserController(req, res) {
     }
 
     const hashedPassword = await bcrypt.hash(passwordValue, 10);
+    const [createdUser] = await db
+      .insert(users)
+      .values({
+        email: normalizedEmail,
+        password: hashedPassword,
+        name: nameValue || null,
+        phone: phoneValue,
+        role: "VENDOR",
+        isVerified: false,
+      })
+      .returning();
 
-    // Generate OTP before creating DB records so we can abort if OTP generation fails.
-    const otpResult = await issueOtp({
-      email: normalizedEmail,
-      purpose: OTP_PURPOSES.VERIFY_EMAIL,
-      subject: "Verification Email",
-      buildHtml: getOtpHtml,
-    });
-
-    if (!otpResult.ok) {
-      return sendResponse({
-        res,
-        statusCode: 400,
-        message: "Unable to generate OTP.",
-        success: false,
-      });
-    }
-
-    const result = await db.transaction(async (tx) => {
-      const [createdUser] = await tx
-        .insert(users)
-        .values({
-          email: normalizedEmail,
-          password: hashedPassword,
-          name: nameValue || null,
-          phone: phoneValue,
-          role: resolvedRole,
-          isVerified: false,
-        })
-        .returning();
-
-      if (isVendorRegistration) {
-        const [createdVendor] = await tx
-          .insert(vendors)
-          .values({
-            userId: createdUser.id,
-            companyName: companyNameValue,
-            gstNumber: gstNumberValue,
-            categoryId: categoryIdValue,
-            contactPerson: contactPersonValue,
-            contactEmail: contactEmailValue,
-            contactPhone: contactPhoneValue,
-            address: addressValue,
-          })
-          .returning();
-
-        return { user: createdUser, vendor: createdVendor };
-      }
-
-      return { user: createdUser, vendor: null };
-    });
-
-    return sendTokenResponse({
+    return sendResponse({
       res,
-      user: result.user,
-      vendor: result.vendor,
-      message: isVendorRegistration
-        ? "Vendor registered successfully."
-        : "User registered successfully.",
+      statusCode: 201,
+      success: true,
+      message: "User registered successfully. Please verify your email.",
+      user: {
+        id: createdUser.id,
+        email: createdUser.email,
+        name: createdUser.name,
+        phone: createdUser.phone,
+        role: createdUser.role,
+        isVerified: createdUser.isVerified,
+        createdAt: createdUser.createdAt,
+      },
     });
   } catch (error) {
     console.error("Error registering user: ", error);
