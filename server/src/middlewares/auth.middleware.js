@@ -98,4 +98,64 @@ async function isManager(req, res, next) {
   }
 }
 
-export { authUser, isAdmin, isManager };
+async function isOfficerOrAdmin(req, res, next) {
+  try {
+    if (!req.user || !req.user.email) {
+      return res.status(401).json({ message: "Unauthorized", success: false });
+    }
+
+    const { getUserByEmail } = await import("../services/user.service.js");
+    const user = await getUserByEmail(req.user.email);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "User not found", success: false });
+    }
+
+    if (user.role !== "ADMIN" && user.role !== "PROCUREMENT_OFFICER") {
+      return res
+        .status(403)
+        .json({ message: "Forbidden. Admins or Procurement Officers only.", success: false });
+    }
+
+    req.user = { ...req.user, role: user.role, id: user.id };
+    next();
+  } catch (err) {
+    console.error("isOfficerOrAdmin error:", err);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", success: false });
+  }
+}
+
+async function isVendor(req, res, next) {
+  try {
+    if (!req.user || !req.user.email) {
+      return res.status(401).json({ message: "Unauthorized", success: false });
+    }
+
+    const { getUserByEmail } = await import("../services/user.service.js");
+    const user = await getUserByEmail(req.user.email);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "User not found", success: false });
+    }
+
+    if (user.role !== "VENDOR") {
+      return res
+        .status(403)
+        .json({ message: "Forbidden. Vendors only.", success: false });
+    }
+
+    req.user = { ...req.user, role: user.role, id: user.id };
+    next();
+  } catch (err) {
+    console.error("isVendor error:", err);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", success: false });
+  }
+}
+
+export { authUser, isAdmin, isManager, isOfficerOrAdmin, isVendor };
