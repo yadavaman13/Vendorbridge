@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, Navigate } from 'react-router';
+import { Link, Navigate, useNavigate } from 'react-router';
 
 import FormGroup from '../components/FormGroup';
 import { useAuth } from '../hooks/useAuth';
@@ -16,6 +16,7 @@ const createInitialErrors = () => ({
 
 const Login = () => {
     const { handleLogin, loading, error, user } = useAuth();
+    const navigate = useNavigate();
     const [formValues, setFormValues] = useState({
         email: '',
         password: '',
@@ -95,10 +96,19 @@ const Login = () => {
         }
 
         try {
-            await handleLogin({
+            const response = await handleLogin({
                 email: formValues.email,
                 password: formValues.password,
             });
+
+            if (response?.success !== false) {
+                const nextPath =
+                    response?.user?.role === 'MANAGER'
+                        ? '/manager/dashboard'
+                        : '/';
+
+                navigate(nextPath, { replace: true });
+            }
         } finally {
             setIsSubmitting(false);
         }

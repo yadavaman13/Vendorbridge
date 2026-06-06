@@ -1,3 +1,4 @@
+import { Navigate } from 'react-router';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
@@ -118,8 +119,11 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 
 /* ═══════════════════════════════════════════════════════════════════ */
 const HomePage = () => {
-    const navigate = useNavigate();
     const { user } = useAuth();
+
+    if (user?.role === 'MANAGER') {
+        return <Navigate to="/manager/dashboard" replace />;
+    }
 
     /* ── raw data states ── */
     const [quotations,     setQuotations]     = useState([]);

@@ -12,3 +12,5 @@ server/drizzle/
 
 .tmp-server-err.log
 .tmp-server-out.log
+
+seed_mock_data.sql

@@ -10,6 +10,7 @@ import {
   authUser,
   isAdmin,
   isOfficerOrAdmin,
+  allowRoles,
 } from "../middlewares/auth.middleware.js";
 
 const router = Router();
@@ -21,7 +22,7 @@ router.get("/activity-logs", authUser, isAdmin, getActivityLogsController);
 router.get(
   "/activity-logs/:entityType/:entityId",
   authUser,
-  isOfficerOrAdmin,
+  allowRoles("ADMIN", "PROCUREMENT_OFFICER", "MANAGER"),
   getEntityTimelineController
 );
 
@@ -32,7 +33,7 @@ router.get("/dashboard/summary", authUser, getDashboardSummaryController);
 router.get(
   "/reports/procurement",
   authUser,
-  isOfficerOrAdmin,
+  allowRoles("ADMIN", "PROCUREMENT_OFFICER", "MANAGER"),
   getProcurementReportController
 );
 
@@ -40,7 +41,7 @@ router.get(
 router.get(
   "/reports/vendor-performance",
   authUser,
-  isOfficerOrAdmin,
+  allowRoles("ADMIN", "PROCUREMENT_OFFICER", "MANAGER"),
   getVendorPerformanceReportController
 );
 

@@ -18,6 +18,7 @@ import {
     isProcurementOfficer,
     isVendor,
     isOfficerOrAdmin,
+    allowRoles,
 } from '../middlewares/auth.middleware.js';
 import {
     createQuotationController,
@@ -64,7 +65,7 @@ rfqsRoutes.post(
 rfqsRoutes.get(
     '/',
     authUser,
-    isAdminOrProcurementOfficer,
+    allowRoles('ADMIN', 'PROCUREMENT_OFFICER', 'MANAGER'),
     listRFQsValidator,
     getRFQsController,
 );
@@ -72,12 +73,12 @@ rfqsRoutes.get(
 /**
  * @route GET /api/rfqs/:id
  * @description Get RFQ details, items, and invited vendors
- * @access Private (ADMIN, PROCUREMENT_OFFICER)
+ * @access Private (ADMIN, PROCUREMENT_OFFICER, MANAGER)
  */
 rfqsRoutes.get(
     '/:id',
     authUser,
-    isAdminOrProcurementOfficer,
+    allowRoles('ADMIN', 'PROCUREMENT_OFFICER', 'MANAGER'),
     getRFQByIdValidator,
     getRFQByIdController,
 );
@@ -207,7 +208,7 @@ rfqsRoutes.post(
 rfqsRoutes.get(
     '/:rfqId/quotations/comparison',
     authUser,
-    isOfficerOrAdmin,
+    allowRoles('ADMIN', 'PROCUREMENT_OFFICER', 'MANAGER'),
     rfqIdParamValidator,
     getQuotationComparisonController,
 );

@@ -9,6 +9,7 @@ import ForgotPassword from './features/auth/pages/ForgotPassword';
 
 // Shared
 import HomePage from './features/shared/pages/HomePage';
+import ManagerDashboard from './features/manager/pages/ManagerDashboard';
 import ProtectedRoute from './features/auth/components/ProtectedRoute';
 
 // Feature pages
@@ -24,6 +25,14 @@ import ActivityPage from './features/activity/pages/ActivityPage';
 const protect = (element) => <ProtectedRoute>{element}</ProtectedRoute>;
 
 export const router = createBrowserRouter([
+    {
+        path: '/manager/dashboard',
+        element: (
+            <ProtectedRoute allowedRoles={['MANAGER']} redirectTo="/">
+                <ManagerDashboard />
+            </ProtectedRoute>
+        ),
+    },
     { path: '/',                 element: protect(<HomePage />) },
     { path: '/purchase-orders',  element: protect(<PurchaseOrderDashboard />) },
     { path: '/vendors',          element: protect(<VendorsPage />) },

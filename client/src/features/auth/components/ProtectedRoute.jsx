@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Navigate } from 'react-router';
 import { useAuth } from '../hooks/useAuth';
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, allowedRoles = null, redirectTo = '/login' }) => {
     const { user, loading, error, handleGetMe } = useAuth();
     const [hasChecked, setHasChecked] = useState(false);
     const hasRequestedRef = useRef(false);
@@ -35,7 +35,11 @@ const ProtectedRoute = ({ children }) => {
     }
 
     if (!user && !loading) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to={redirectTo} replace />;
+    }
+
+    if (allowedRoles && user && !allowedRoles.includes(user.role)) {
+        return <Navigate to={redirectTo} replace />;
     }
 
     return children;
