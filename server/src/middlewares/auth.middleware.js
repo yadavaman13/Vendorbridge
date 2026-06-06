@@ -38,4 +38,30 @@ async function authUser(req, res, next) {
     }
 }
 
-export { authUser };
+async function requireRole(requiredRole) {
+    return async (req, res, next) => {
+        try {
+            if (!req.user || !req.user.email) {
+                return res.status(401).json({ message: 'Unauthorized', success: false });
+            }
+
+            const { getUserByEmail } = await import('../services/user.service.js');
+            const user = await getUserByEmail(req.user.email);
+            if (!user) {
+                return res.status(404).json({ message: 'User not found', success: false });
+            }
+
+            if (user.role !== requiredRole) {
+                return res.status(403).json({ message: 'Forbidden. Insufficient role.', success: false });
+            }
+
+            // attach full user
+            req.user = { ...req.user, role: user.role, id: user.id };
+            next();
+        } catch (err) {
+            console.error('requireRole error:', err);
+            return res.status(500).json({ message: 'Internal server error', success: false });
+        }
+    };}
+
+export { authUser, requireRole };

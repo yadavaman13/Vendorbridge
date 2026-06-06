@@ -1,21 +1,23 @@
-import { Router } from 'express';
+import { Router } from "express";
 import {
-    registerUserController,
-    loginUserController,
-    forgotPasswordController,
-    resetPasswordController,
-    logoutUserController,
-    getMeController,
-    verifyEmailController,
-    resendOtpController,
-} from '../controllers/auth.controller.js';
+  registerUserController,
+  loginUserController,
+  forgotPasswordController,
+  resetPasswordController,
+  logoutUserController,
+  getMeController,
+  verifyEmailController,
+  resendOtpController,
+  adminCreateUserController,
+  managerCreateUserController,
+} from "../controllers/auth.controller.js";
 import {
-    registerValidator,
-    loginValidator,
-    forgotPasswordValidator,
-    resetPasswordValidator,
-} from '../validators/auth.validators.js';
-import { authUser } from '../middlewares/auth.middleware.js';
+  registerValidator,
+  loginValidator,
+  forgotPasswordValidator,
+  resetPasswordValidator,
+} from "../validators/auth.validators.js";
+import { authUser, requireRole } from "../middlewares/auth.middleware.js";
 
 const authRoutes = Router();
 
@@ -24,14 +26,14 @@ const authRoutes = Router();
  * @description Register a user
  * @access Public
  */
-authRoutes.post('/register', registerValidator, registerUserController);
+authRoutes.post("/register", registerValidator, registerUserController);
 
 /**
  * @route POST /api/auth/login
  * @description Login a user
  * @access Public
  */
-authRoutes.post('/login', loginValidator, loginUserController);
+authRoutes.post("/login", loginValidator, loginUserController);
 
 /**
  * @route POST /api/auth/forgot-password
@@ -39,9 +41,9 @@ authRoutes.post('/login', loginValidator, loginUserController);
  * @access Public
  */
 authRoutes.post(
-    '/forgot-password',
-    forgotPasswordValidator,
-    forgotPasswordController,
+  "/forgot-password",
+  forgotPasswordValidator,
+  forgotPasswordController,
 );
 
 /**
@@ -50,9 +52,9 @@ authRoutes.post(
  * @access Public
  */
 authRoutes.post(
-    '/reset-password',
-    resetPasswordValidator,
-    resetPasswordController,
+  "/reset-password",
+  resetPasswordValidator,
+  resetPasswordController,
 );
 
 /**
@@ -60,27 +62,46 @@ authRoutes.post(
  * @description Logout a user
  * @access Private
  */
-authRoutes.post('/logout', authUser, logoutUserController);
+authRoutes.post("/logout", authUser, logoutUserController);
 
 /**
  * @route GET /api/auth/get-me
  * @description Get current user profile
  * @access Private
  */
-authRoutes.get('/get-me', authUser, getMeController);
+authRoutes.get("/get-me", authUser, getMeController);
 
 /**
  * @route POST /api/auth/verify-email
  * @description Verify user's email address
  * @access Public
  */
-authRoutes.post('/verify-email', verifyEmailController);
+authRoutes.post("/verify-email", verifyEmailController);
 
 /**
  * @route POST /api/auth/resend-otp
  * @description Resend OTP for email verification
  * @access Public
  */
-authRoutes.post('/resend-otp', resendOtpController);
+authRoutes.post("/resend-otp", resendOtpController);
+
+// Admin creates Manager
+// Admin creates Manager
+authRoutes.post(
+  "/admin/create-user",
+  authUser,
+  requireRole("ADMIN"),
+  registerValidator,
+  adminCreateUserController,
+);
+
+// Manager creates Procurement Officer
+authRoutes.post(
+  "/manager/create-user",
+  authUser,
+  requireRole("MANAGER"),
+  registerValidator,
+  managerCreateUserController,
+);
 
 export default authRoutes;
