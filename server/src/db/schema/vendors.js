@@ -1,7 +1,5 @@
 import {
   pgTable,
-  serial,
-  integer,
   uuid,
   varchar,
   timestamp,
@@ -13,9 +11,9 @@ import { categories } from "./categories.js";
 import { approvalStatusEnum } from "./enums.js";
 
 export const vendors = pgTable("vendors", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),
 
-  userId: integer("user_id")
+  userId: uuid("user_id")
     .notNull()
     .references(() => users.id, {
       onDelete: "cascade",
