@@ -5,7 +5,6 @@ import { useVendors } from '../hooks/useVendors';
 import Table from '../../shared/components/Table';
 import Modal from '../../shared/components/Modal';
 import Loader from '../../shared/components/Loader';
-import Toast from '../../shared/components/Toast';
 import '../styles/vendors.scss';
 
 const VendorsPage = () => {

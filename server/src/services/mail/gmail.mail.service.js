@@ -24,23 +24,47 @@ try {
     throw error;
 }
 
-export const sendEmailUsingGmailAPI = async ({ to, subject, html, text }) => {
+export const sendEmailUsingGmailAPI = async ({ to, subject, html, text, attachments }) => {
     try {
         if (!gmail) {
             throw new Error('Gmail API client is not initialized');
         }
 
-        const messageParts = [
-            `From: ${envConfig.GOOGLE_SENDER_EMAIL}`,
-            `To: ${to}`,
-            'Content-Type: text/html; charset=UTF-8',
-            'MIME-Version: 1.0',
-            `Subject: ${subject}`,
-            '',
-            html || text,
-        ];
+        let message = '';
+        if (attachments && attachments.length > 0) {
+            const boundary = '____boundary_str_here____';
+            message += `From: ${envConfig.GOOGLE_SENDER_EMAIL}\n`;
+            message += `To: ${to}\n`;
+            message += `Subject: ${subject}\n`;
+            message += `MIME-Version: 1.0\n`;
+            message += `Content-Type: multipart/mixed; boundary="${boundary}"\n\n`;
 
-        const message = messageParts.join('\n');
+            message += `--${boundary}\n`;
+            message += `Content-Type: text/html; charset=UTF-8\n`;
+            message += `Content-Transfer-Encoding: 7bit\n\n`;
+            message += `${html || text || ''}\n\n`;
+
+            for (const att of attachments) {
+                const contentBase64 = att.content.toString('base64');
+                message += `--${boundary}\n`;
+                message += `Content-Type: ${att.contentType || 'application/octet-stream'}\n`;
+                message += `Content-Transfer-Encoding: base64\n`;
+                message += `Content-Disposition: attachment; filename="${att.filename}"\n\n`;
+                message += `${contentBase64}\n\n`;
+            }
+            message += `--${boundary}--`;
+        } else {
+            const messageParts = [
+                `From: ${envConfig.GOOGLE_SENDER_EMAIL}`,
+                `To: ${to}`,
+                'Content-Type: text/html; charset=UTF-8',
+                'MIME-Version: 1.0',
+                `Subject: ${subject}`,
+                '',
+                html || text,
+            ];
+            message = messageParts.join('\n');
+        }
 
         const encodedMessage = Buffer.from(message)
             .toString('base64')

@@ -27,7 +27,7 @@ if (shouldInitNodeMailer) {
         });
 }
 
-async function sendEmailWithNodeMailer({ to, subject, html, text }) {
+async function sendEmailWithNodeMailer({ to, subject, html, text, attachments }) {
     if (!nodeMailerTransporter) {
         throw new Error(
             'NodeMailer is not initialized. NODE_ENV must be "development".',
@@ -40,6 +40,7 @@ async function sendEmailWithNodeMailer({ to, subject, html, text }) {
         subject,
         html,
         text,
+        attachments: attachments || [],
     };
 
     const details = await nodeMailerTransporter.sendMail(mailOptions);

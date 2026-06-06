@@ -1,4 +1,4 @@
-import { eq, and, desc, asc, count } from "drizzle-orm";
+import { eq, and, desc, asc, count, ilike } from "drizzle-orm";
 import { db } from "../../config/database.js";
 import { invoices } from "../schema/invoices.js";
 import { purchaseOrders } from "../schema/purchaseOrders.js";
