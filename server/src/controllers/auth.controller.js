@@ -49,7 +49,7 @@ async function sendTokenResponse({ res, user, vendor, message }) {
     },
   );
 
-  res.cookie("token", token);
+  res.cookie("token", token, envConfig.AUTH_COOKIE_OPTIONS);
 
   return sendResponse({
     res,
@@ -158,6 +158,23 @@ async function registerUserController(req, res) {
 
     const hashedPassword = await bcrypt.hash(passwordValue, 10);
 
+    // Generate OTP before creating DB records so we can abort if OTP generation fails.
+    const otpResult = await issueOtp({
+      email: normalizedEmail,
+      purpose: OTP_PURPOSES.VERIFY_EMAIL,
+      subject: "Verification Email",
+      buildHtml: getOtpHtml,
+    });
+
+    if (!otpResult.ok) {
+      return sendResponse({
+        res,
+        statusCode: 400,
+        message: "Unable to generate OTP.",
+        success: false,
+      });
+    }
+
     const result = await db.transaction(async (tx) => {
       const [createdUser] = await tx
         .insert(users)
@@ -191,22 +208,6 @@ async function registerUserController(req, res) {
 
       return { user: createdUser, vendor: null };
     });
-
-    const otpResult = await issueOtp({
-      email: normalizedEmail,
-      purpose: OTP_PURPOSES.VERIFY_EMAIL,
-      subject: "Verification Email",
-      buildHtml: getOtpHtml,
-    });
-
-    if (!otpResult.ok) {
-      return sendResponse({
-        res,
-        statusCode: 400,
-        message: "Unable to generate OTP.",
-        success: false,
-      });
-    }
 
     return sendTokenResponse({
       res,

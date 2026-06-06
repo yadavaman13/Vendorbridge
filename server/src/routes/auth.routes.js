@@ -13,11 +13,16 @@ import {
 } from "../controllers/auth.controller.js";
 import {
   registerValidator,
+  vendorRegisterValidator,
   loginValidator,
   forgotPasswordValidator,
   resetPasswordValidator,
 } from "../validators/auth.validators.js";
-import { authUser, requireRole } from "../middlewares/auth.middleware.js";
+import {
+  authUser,
+  isAdmin,
+  isManager,
+} from "../middlewares/auth.middleware.js";
 
 const authRoutes = Router();
 
@@ -26,7 +31,7 @@ const authRoutes = Router();
  * @description Register a user
  * @access Public
  */
-authRoutes.post("/register", registerValidator, registerUserController);
+authRoutes.post("/register", vendorRegisterValidator, registerUserController);
 
 /**
  * @route POST /api/auth/login
@@ -86,11 +91,10 @@ authRoutes.post("/verify-email", verifyEmailController);
 authRoutes.post("/resend-otp", resendOtpController);
 
 // Admin creates Manager
-// Admin creates Manager
 authRoutes.post(
   "/admin/create-user",
   authUser,
-  requireRole("ADMIN"),
+  isAdmin,
   registerValidator,
   adminCreateUserController,
 );
@@ -99,7 +103,7 @@ authRoutes.post(
 authRoutes.post(
   "/manager/create-user",
   authUser,
-  requireRole("MANAGER"),
+  isManager,
   registerValidator,
   managerCreateUserController,
 );
