@@ -217,7 +217,7 @@ const Register = () => {
                     noValidate
                 >
                     <FormGroup
-                        label="Username"
+                        label="Name"
                         id="username"
                         name="username"
                         type="text"
