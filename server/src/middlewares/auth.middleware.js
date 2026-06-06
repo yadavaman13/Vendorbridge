@@ -1,155 +1,181 @@
-import jwt from "jsonwebtoken";
-import envConfig from "../config/envConfig.js";
-import redis from "../config/cache.js";
+import jwt from 'jsonwebtoken';
+import envConfig from '../config/envConfig.js';
+import redis from '../config/cache.js';
+import { getUserByEmail } from '../services/user.service.js';
+import { sendResponse } from '../utils/response.utlis.js';
 
-async function authUser(req, res, next) {
-  try {
-    const token = req.cookies.token;
-    if (!token) {
-      return res.status(401).json({
-        message: "Unauthorized. No token provided.",
-        success: false,
-      });
+/**
+ * Load and validate the authenticated user from DB.
+ * Returns null if user is deleted or inactive.
+ */
+async function loadAuthenticatedUser(email) {
+    if (!email) return null;
+
+    const user = await getUserByEmail(email);
+
+    if (!user || user.deletedAt || user.isActive === false) {
+        return null;
     }
 
-    // Verify JWT first — this is synchronous and doesn't need Redis
-    let decoded;
-    try {
-      decoded = jwt.verify(token, envConfig.JWT_SECRET);
-    } catch (jwtErr) {
-      return res.status(401).json({
-        message: "Unauthorized. Invalid or expired token.",
-        success: false,
-      });
-    }
+    return user;
+}
 
-    // Check Redis blacklist — gracefully skip if Redis is temporarily unavailable
-    try {
-      const isBlacklisted = await redis.get(`blacklist:${token}`);
-      if (isBlacklisted) {
-        return res.status(401).json({
-          message: "Unauthorized. Token has been revoked.",
-          success: false,
-        });
-      }
-    } catch (redisErr) {
-      // Redis is down/reconnecting — log the warning but don't block the request
-      console.warn("[Auth] Redis unavailable for blacklist check, proceeding without it:", redisErr.message);
-    }
+/**
+ * Factory that creates a role-guard middleware accepting any of the given roles.
+ */
+function createRoleGuard(allowedRoles) {
+    return async function roleGuard(req, res, next) {
+        try {
+            if (!req.user?.email) {
+                return sendResponse({
+                    res,
+                    statusCode: 401,
+                    success: false,
+                    message: 'Unauthorized. Please login first.',
+                });
+            }
 
-    req.user = {
-      id: decoded.id,
-      email: decoded.email,
-      role: decoded.role,
+            // Optimistic fast-path: role already known and allowed
+            const user =
+                req.user?.role && allowedRoles.includes(req.user.role)
+                    ? req.user
+                    : await loadAuthenticatedUser(req.user.email);
+
+            if (!user) {
+                return sendResponse({
+                    res,
+                    statusCode: 404,
+                    success: false,
+                    message: 'User not found.',
+                });
+            }
+
+            if (!allowedRoles.includes(user.role)) {
+                return sendResponse({
+                    res,
+                    statusCode: 403,
+                    success: false,
+                    message: 'Forbidden. Insufficient permissions.',
+                });
+            }
+
+            req.user = {
+                ...req.user,
+                id: user.id,
+                email: user.email,
+                role: user.role,
+                name: user.name,
+            };
+
+            next();
+        } catch (error) {
+            console.error('Role guard error:', error.message);
+            return sendResponse({
+                res,
+                statusCode: 500,
+                success: false,
+                message: 'Failed to authorize request.',
+                error: 'Internal server error',
+            });
+        }
     };
-
-    next();
-  } catch (error) {
-    console.error("Auth middleware error:", error.message);
-    return res.status(401).json({
-      message: "Unauthorized. Authentication failed.",
-      success: false,
-    });
-  }
 }
 
-async function isAdmin(req, res, next) {
-  try {
-    if (!req.user || !req.user.email) {
-      return res.status(401).json({ message: "Unauthorized", success: false });
-    }
+/**
+ * @middleware authUser
+ * Validates the JWT cookie and attaches user context to req.user.
+ * Redis blacklist check is gracefully skipped if Redis is unavailable.
+ */
+async function authUser(req, res, next) {
+    try {
+        const token = req.cookies.token;
 
-    const { getUserByEmail } = await import("../services/user.service.js");
-    const user = await getUserByEmail(req.user.email);
-    if (!user) {
-      return res.status(404).json({ message: "User not found", success: false });
-    }
+        if (!token) {
+            return sendResponse({
+                res,
+                statusCode: 401,
+                success: false,
+                message: 'Unauthorized. No token provided.',
+            });
+        }
 
-    if (user.role !== "ADMIN") {
-      return res.status(403).json({ message: "Forbidden. Admins only.", success: false });
-    }
+        // Verify JWT first — synchronous, no Redis dependency
+        let decoded;
+        try {
+            decoded = jwt.verify(token, envConfig.JWT_SECRET);
+        } catch (jwtErr) {
+            return sendResponse({
+                res,
+                statusCode: 401,
+                success: false,
+                message: 'Unauthorized. Invalid or expired token.',
+            });
+        }
 
-    req.user = { ...req.user, role: user.role, id: user.id };
-    next();
-  } catch (err) {
-    console.error("isAdmin error:", err.message);
-    return res.status(500).json({ message: "Internal server error", success: false });
-  }
+        // Redis blacklist check — skip gracefully if Redis is temporarily down
+        try {
+            const isBlacklisted = await redis.get(`blacklist:${token}`);
+            if (isBlacklisted) {
+                return sendResponse({
+                    res,
+                    statusCode: 401,
+                    success: false,
+                    message: 'Unauthorized. Token has been revoked.',
+                });
+            }
+        } catch (redisErr) {
+            console.warn('[Auth] Redis unavailable for blacklist check, proceeding without it:', redisErr.message);
+        }
+
+        // Load full user from DB to verify they still exist and are active
+        const user = await loadAuthenticatedUser(decoded.email);
+        if (!user) {
+            return sendResponse({
+                res,
+                statusCode: 404,
+                success: false,
+                message: 'User not found or account is inactive.',
+            });
+        }
+
+        req.user = {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+            name: user.name,
+        };
+
+        next();
+    } catch (error) {
+        console.error('Auth middleware error:', error.message);
+        return sendResponse({
+            res,
+            statusCode: 401,
+            success: false,
+            message: 'Unauthorized. Authentication failed.',
+        });
+    }
 }
 
-async function isManager(req, res, next) {
-  try {
-    if (!req.user || !req.user.email) {
-      return res.status(401).json({ message: "Unauthorized", success: false });
-    }
+// ── Role guard exports ────────────────────────────────────────────────────────
 
-    const { getUserByEmail } = await import("../services/user.service.js");
-    const user = await getUserByEmail(req.user.email);
-    if (!user) {
-      return res.status(404).json({ message: "User not found", success: false });
-    }
+/** Allow any of the given roles (variadic) */
+const allowRoles = (...roles) => createRoleGuard(roles);
 
-    if (user.role !== "MANAGER") {
-      return res.status(403).json({ message: "Forbidden. Managers only.", success: false });
-    }
+const isAdmin                    = createRoleGuard(['ADMIN']);
+const isManager                  = createRoleGuard(['MANAGER']);
+const isProcurementOfficer       = createRoleGuard(['PROCUREMENT_OFFICER']);
+const isOfficerOrAdmin           = createRoleGuard(['ADMIN', 'PROCUREMENT_OFFICER', 'MANAGER']);
+const isAdminOrProcurementOfficer = isOfficerOrAdmin; // alias
+const isVendor                   = createRoleGuard(['VENDOR']);
 
-    req.user = { ...req.user, role: user.role, id: user.id };
-    next();
-  } catch (err) {
-    console.error("isManager error:", err.message);
-    return res.status(500).json({ message: "Internal server error", success: false });
-  }
-}
-
-async function isOfficerOrAdmin(req, res, next) {
-  try {
-    if (!req.user || !req.user.email) {
-      return res.status(401).json({ message: "Unauthorized", success: false });
-    }
-
-    const { getUserByEmail } = await import("../services/user.service.js");
-    const user = await getUserByEmail(req.user.email);
-    if (!user) {
-      return res.status(404).json({ message: "User not found", success: false });
-    }
-
-    if (user.role !== "ADMIN" && user.role !== "PROCUREMENT_OFFICER" && user.role !== "MANAGER") {
-      return res.status(403).json({
-        message: "Forbidden. Admins, Managers, or Procurement Officers only.",
-        success: false,
-      });
-    }
-
-    req.user = { ...req.user, role: user.role, id: user.id };
-    next();
-  } catch (err) {
-    console.error("isOfficerOrAdmin error:", err.message);
-    return res.status(500).json({ message: "Internal server error", success: false });
-  }
-}
-
-async function isVendor(req, res, next) {
-  try {
-    if (!req.user || !req.user.email) {
-      return res.status(401).json({ message: "Unauthorized", success: false });
-    }
-
-    const { getUserByEmail } = await import("../services/user.service.js");
-    const user = await getUserByEmail(req.user.email);
-    if (!user) {
-      return res.status(404).json({ message: "User not found", success: false });
-    }
-
-    if (user.role !== "VENDOR") {
-      return res.status(403).json({ message: "Forbidden. Vendors only.", success: false });
-    }
-
-    req.user = { ...req.user, role: user.role, id: user.id };
-    next();
-  } catch (err) {
-    console.error("isVendor error:", err.message);
-    return res.status(500).json({ message: "Internal server error", success: false });
-  }
-}
-
-export { authUser, isAdmin, isManager, isOfficerOrAdmin, isVendor };
+export {
+    authUser,
+    allowRoles,
+    isAdmin,
+    isManager,
+    isProcurementOfficer,
+    isOfficerOrAdmin,
+    isAdminOrProcurementOfficer,
+    isVendor,
+};

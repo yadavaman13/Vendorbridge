@@ -5,61 +5,47 @@ const api = axios.create({
     withCredentials: true,
 });
 
-export async function register({ name, email, password }) {
-    try {
-        const response = await api.post('/api/auth/register', {
-            name,
-            email,
-            password,
-        });
-
-        return response.data;
-    } catch (err) {
-        throw err;
-    }
+export async function register({ name, email, password, phone, companyName, gstNumber, categoryId, address }) {
+    const response = await api.post('/api/auth/register', {
+        name,
+        email,
+        password,
+        phone,
+        companyName,
+        gstNumber,
+        categoryId,
+        address,
+    });
+    return response.data;
 }
 
 export async function login({ email, password }) {
-    try {
-        const response = await api.post('/api/auth/login', {
-            email,
-            password,
-        });
-        return response.data;
-    } catch (error) {
-        throw new Error('Login Failed');
-    }
+    const response = await api.post('/api/auth/login', {
+        email,
+        password,
+    });
+    return response.data;
 }
 
 export async function verifyEmail({ email, otp }) {
-    try {
-        const response = await api.post('/api/auth/verify-email', {
-            email,
-            otp,
-        });
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
+    const response = await api.post('/api/auth/verify-email', {
+        email,
+        otp,
+    });
+    return response.data;
 }
 
 export async function resendOtp({ email }) {
-    try {
-        const response = await api.post('/api/auth/resend-otp', {
-            email,
-        });
-
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
+    const response = await api.post('/api/auth/resend-otp', {
+        email,
+    });
+    return response.data;
 }
 
 export async function requestPasswordReset({ email }) {
     const response = await api.post('/api/auth/forgot-password', {
         email,
     });
-
     return response.data;
 }
 
@@ -70,7 +56,6 @@ export async function resetPassword({ email, otp, password, confirmPassword }) {
         password,
         confirmPassword,
     });
-
     return response.data;
 }
 

@@ -8,6 +8,13 @@
       "when": 1780729910910,
       "tag": "0000_quiet_omega_sentinel",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1780741282192,
+      "tag": "0001_busy_wolf_cub",
+      "breakpoints": true
     }
   ]
 }
