@@ -230,4 +230,6 @@ export {
   updateUserRole,
   markEmailAsVerified,
   getUserVerificationStatus,
+  softDeleteUser,
+  updateUser
 };

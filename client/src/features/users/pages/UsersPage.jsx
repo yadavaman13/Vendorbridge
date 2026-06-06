@@ -6,6 +6,7 @@ import Modal from '../../shared/components/Modal';
 import Loader from '../../shared/components/Loader';
 import Toast from '../../shared/components/Toast';
 import '../styles/users.scss';
+import Layout from '../../shared/components/Layout';
 
 const roleLabels = {
     ADMIN: 'Admin',
@@ -157,17 +158,17 @@ const UsersPage = () => {
 
     if (!isAdmin) {
         return (
-            <div className="vb-page-shell">
+            <Layout title="Access Denied">
                 <div className="vb-vendors-page__alert error-alert">
                     <h2>Access Denied</h2>
                     <p>Only Admin users can manage user accounts.</p>
                 </div>
-            </div>
+            </Layout>
         );
     }
 
     return (
-        <div className="vb-page-shell">
+        <Layout title="User Management">
             <header className="vb-users-page__header">
                 <div>
                     <h1 className="vb-users-page__title">User Management</h1>
@@ -424,7 +425,7 @@ const UsersPage = () => {
                 onClose={closeToast}
                 duration={4000}
             />
-        </div>
+            </Layout>
     );
 };
 

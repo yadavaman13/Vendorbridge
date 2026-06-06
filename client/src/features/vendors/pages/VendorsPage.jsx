@@ -6,6 +6,7 @@ import Table from '../../shared/components/Table';
 import Modal from '../../shared/components/Modal';
 import Loader from '../../shared/components/Loader';
 import '../styles/vendors.scss';
+import Layout from '../../shared/components/Layout';
 
 const VendorsPage = () => {
     const navigate = useNavigate();
@@ -105,7 +106,7 @@ const VendorsPage = () => {
 
     if (isVendorUser) {
         return (
-            <div className="vb-page-shell">
+            <Layout title="Access Denied">
                 <div className="vb-vendors-page__alert error-alert">
                     <h2>Access Denied</h2>
                     <p>Vendor users are not authorized to access the vendor management list.</p>
@@ -117,7 +118,7 @@ const VendorsPage = () => {
                         View My Vendor Profile
                     </button>
                 </div>
-            </div>
+            </Layout>
         );
     }
 
@@ -170,13 +171,7 @@ const VendorsPage = () => {
     ];
 
     return (
-        <div className="vb-vendors-page">
-            <header className="vb-vendors-page__header">
-                <h1 className="vb-vendors-page__title">Vendors</h1>
-                <p className="vb-vendors-page__subtitle">
-                    List and manage registered Vendor organizations in VendorBridge.
-                </p>
-            </header>
+        <Layout title="Vendors">
 
             <div className="vb-vendors-page__toolbar vb-surface">
                 <div className="vb-vendors-page__search-box">
@@ -389,7 +384,7 @@ const VendorsPage = () => {
                     </div>
                 )}
             </Modal>
-        </div>
+            </Layout>
     );
 };
 
