@@ -107,6 +107,7 @@ export const router = createBrowserRouter([
     { path: '/invoices',         element: protect(<InvoicesPage />) },
     { path: '/reports',          element: protect(<ReportsPage />) },
     { path: '/activity',         element: protect(<ActivityPage />) },
+    { path: '/users',            element: protect(<UsersPage />) },
     { path: '/login',            element: <Login /> },
     { path: '/register',         element: <Register /> },
     { path: '/verify-email',     element: <VerifyEmail /> },

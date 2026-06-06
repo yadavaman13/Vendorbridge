@@ -6,6 +6,7 @@ import Modal from '../../shared/components/Modal';
 import Loader from '../../shared/components/Loader';
 import Toast from '../../shared/components/Toast';
 import '../styles/quotations.scss';
+import Layout from '../../shared/components/Layout';
 
 const formatAmount = (value) => {
     if (value == null) return '—';
@@ -203,7 +204,7 @@ const QuotationPage = () => {
     };
 
     return (
-        <div className="vb-page-shell">
+        <Layout title="Quotations">
             <header className="vb-quotations-page__header">
                 <h1 className="vb-quotations-page__title">Quotations</h1>
                 <p className="vb-quotations-page__subtitle">
@@ -331,7 +332,7 @@ const QuotationPage = () => {
                 duration={4200}
                 className="vb-toast-wrapper"
             />
-        </div>
+            </Layout>
     );
 };
 

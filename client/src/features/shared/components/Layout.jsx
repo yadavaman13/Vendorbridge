@@ -78,6 +78,12 @@ const Layout = ({ children, title }) => {
             icon: <Activity size={18} />,
             roles: ['ADMIN', 'MANAGER', 'PROCUREMENT_OFFICER'],
         },
+        {
+            path: '/users',
+            name: 'Manage Users',
+            icon: <Users size={18} />,
+            roles: ['ADMIN'],
+        },
     ];
 
     const filteredMenuItems = menuItems.filter(

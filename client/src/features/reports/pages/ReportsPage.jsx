@@ -4,6 +4,7 @@ import { useReports } from '../hooks/useReports';
 import Loader from '../../shared/components/Loader';
 import '../../vendors/styles/vendors.scss';
 import '../styles/reports.scss';
+import Layout from '../../shared/components/Layout';
 
 const ReportsPage = () => {
     const { user } = useAuth();
@@ -12,17 +13,17 @@ const ReportsPage = () => {
 
     if (!isAdmin) {
         return (
-            <div className="vb-page-shell">
+            <Layout title="Access Denied">
                 <div className="vb-vendors-page__alert error-alert">
                     <h2>Access Denied</h2>
                     <p>Only Admin users can view procurement analytics.</p>
                 </div>
-            </div>
+            </Layout>
         );
     }
 
     return (
-        <div className="vb-page-shell">
+        <Layout title="Reports">
             <header className="vb-vendors-page__header">
                 <div>
                     <h1 className="vb-vendors-page__title">Procurement Analytics</h1>
@@ -106,7 +107,7 @@ const ReportsPage = () => {
                     </section>
                 </div>
             )}
-        </div>
+            </Layout>
     );
 };
 

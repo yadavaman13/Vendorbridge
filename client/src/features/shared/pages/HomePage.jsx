@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../../auth/hooks/useAuth';
 import Logout from '../../auth/components/LogoutButton';
-import Sidebar from '../components/Sidebar';
+import Layout from '../components/Layout';
 import {
     Activity,
     BarChart2,
@@ -116,6 +116,10 @@ const HomePage = () => {
 
     if (user?.role === 'MANAGER') {
         return <Navigate to="/manager/dashboard" replace />;
+    }
+
+    if (user?.role === 'ADMIN') {
+        return <Navigate to="/activity" replace />;
     }
 
     /* ── raw data states ── */
@@ -253,18 +257,13 @@ const HomePage = () => {
 
     /* ── render ── */
     return (
-        <main>
-            <div className="home-with-sidebar">
-                <Sidebar />
-                <div className="home-content">
-                    <div className="home-container">
-                        <h1>Welcome, {user?.name || user?.email}!</h1>
-                        <p>You are successfully logged in.</p>
-                        <Logout />
-                    </div>
-                </div>
+        <Layout title="Dashboard">
+            <div className="home-container">
+                <h1>Welcome, {user?.name || user?.email}!</h1>
+                <p>You are successfully logged in.</p>
+                <Logout />
             </div>
-        </main>
+        </Layout>
     );
 };
 

@@ -23,9 +23,8 @@ export const useUsers = () => {
 
         try {
             const response = await listUsers({ page: pageNumber, limit: pageLimit, role });
-            const payload = response?.data || response;
-            setUsers(payload.items || []);
-            setTotal(payload.total || 0);
+            setUsers(response?.data?.items || response?.items || []);
+            setTotal(response?.data?.total || response?.total || 0);
         } catch (err) {
             setError(err?.response?.data?.message || err?.message || 'Failed to fetch users.');
         } finally {
@@ -60,14 +59,13 @@ export const useUsers = () => {
         setError(null);
         try {
             const response = await updateUserRole(userId, role);
-            const payload = response?.data || response;
-            if (payload?.success) {
-                broadcastToast('success', 'Role Updated', payload.message || 'User role updated successfully.');
+            if (response?.success) {
+                broadcastToast('success', 'Role Updated', response.message || 'User role updated successfully.');
                 await fetchUsers({ page, limit, role: roleFilter });
-                return { success: true, item: payload.data?.item || null };
+                return { success: true, item: response.data?.item || null };
             }
-            setError(payload?.message || 'Failed to update user role.');
-            return { success: false, message: payload?.message };
+            setError(response?.message || 'Failed to update user role.');
+            return { success: false, message: response?.message };
         } catch (err) {
             const message = err?.response?.data?.message || err?.message || 'Failed to update user role.';
             setError(message);
@@ -82,14 +80,13 @@ export const useUsers = () => {
         setError(null);
         try {
             const response = await updateUser(userId, updates);
-            const payload = response?.data || response;
-            if (payload?.success) {
-                broadcastToast('success', 'User Updated', payload.message || 'User information updated successfully.');
+            if (response?.success) {
+                broadcastToast('success', 'User Updated', response.message || 'User information updated successfully.');
                 await fetchUsers({ page, limit, role: roleFilter });
-                return { success: true, item: payload.data?.item || null };
+                return { success: true, item: response.data?.item || null };
             }
-            setError(payload?.message || 'Failed to update user.');
-            return { success: false, message: payload?.message };
+            setError(response?.message || 'Failed to update user.');
+            return { success: false, message: response?.message };
         } catch (err) {
             const message = err?.response?.data?.message || err?.message || 'Failed to update user.';
             setError(message);
@@ -104,14 +101,13 @@ export const useUsers = () => {
         setError(null);
         try {
             const response = await deleteUser(userId);
-            const payload = response?.data || response;
-            if (payload?.success) {
-                broadcastToast('success', 'User Deleted', payload.message || 'User deleted successfully.');
+            if (response?.success) {
+                broadcastToast('success', 'User Deleted', response.message || 'User deleted successfully.');
                 await fetchUsers({ page, limit, role: roleFilter });
                 return { success: true };
             }
-            setError(payload?.message || 'Failed to delete user.');
-            return { success: false, message: payload?.message };
+            setError(response?.message || 'Failed to delete user.');
+            return { success: false, message: response?.message };
         } catch (err) {
             const message = err?.response?.data?.message || err?.message || 'Failed to delete user.';
             setError(message);
@@ -127,14 +123,13 @@ export const useUsers = () => {
 
         try {
             const response = await createManagerUser({ email, password, name, phone });
-            const payload = response?.data || response;
-            if (payload?.success) {
-                broadcastToast('success', 'Manager Created', payload.message || 'Manager user created successfully.');
+            if (response?.success) {
+                broadcastToast('success', 'Manager Created', response.message || 'Manager user created successfully.');
                 await fetchUsers({ page, limit, role: roleFilter });
-                return { success: true, user: payload.user || null };
+                return { success: true, user: response.data?.user || response.user || null };
             }
-            setError(payload?.message || 'Failed to create manager.');
-            return { success: false, message: payload?.message };
+            setError(response?.message || 'Failed to create manager.');
+            return { success: false, message: response?.message };
         } catch (err) {
             const message = err?.response?.data?.message || err?.message || 'Failed to create manager.';
             setError(message);
