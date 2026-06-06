@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authUser, isAdmin } from "../middlewares/auth.middleware.js";
+import { authUser, isAdmin, allowRoles } from "../middlewares/auth.middleware.js";
 import {
   getUserByIdController,
   listUsersController,
@@ -15,10 +15,10 @@ const userRoutes = Router();
 
 /**
  * @route GET /api/users
- * @description Admin lists all users with pagination
- * @access Private (ADMIN)
+ * @description Admin or Manager lists all users with pagination
+ * @access Private (ADMIN, MANAGER)
  */
-userRoutes.get("/", authUser, isAdmin, listUsersValidator, listUsersController);
+userRoutes.get("/", authUser, allowRoles("ADMIN", "MANAGER"), listUsersValidator, listUsersController);
 
 /**
  * @route GET /api/users/:id

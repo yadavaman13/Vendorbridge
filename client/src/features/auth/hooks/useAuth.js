@@ -62,8 +62,20 @@ export const useAuth = () => {
             } else {
                 throw new Error(data?.message || 'Login Failed');
             }
+
+            return data;
         } catch (error) {
-            setError(data?.message || 'Login Failed');
+            const message =
+                error?.response?.data?.message ||
+                data?.message ||
+                error?.message ||
+                'Login Failed';
+            setError(message);
+
+            return {
+                success: false,
+                message,
+            };
         } finally {
             setLoading(false);
         }

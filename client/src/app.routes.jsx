@@ -5,6 +5,7 @@ import Register from './features/auth/pages/Register';
 import VerifyEmail from './features/auth/pages/VerifyEmail';
 import ForgotPassword from './features/auth/pages/ForgotPassword';
 import HomePage from './features/shared/pages/HomePage';
+import ManagerDashboard from './features/manager/pages/ManagerDashboard';
 import ProtectedRoute from './features/auth/components/ProtectedRoute';
 
 export const router = createBrowserRouter([
@@ -13,6 +14,14 @@ export const router = createBrowserRouter([
         element: (
             <ProtectedRoute>
                 <HomePage />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: '/manager/dashboard',
+        element: (
+            <ProtectedRoute allowedRoles={['MANAGER']} redirectTo="/">
+                <ManagerDashboard />
             </ProtectedRoute>
         ),
     },

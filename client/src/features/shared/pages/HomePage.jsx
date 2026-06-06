@@ -1,11 +1,13 @@
-import React from 'react';
-import { useNavigate } from 'react-router';
+import { Navigate } from 'react-router';
 import { useAuth } from '../../auth/hooks/useAuth';
 import Logout from '../../auth/components/LogoutButton';
 
 const HomePage = () => {
-    const navigate = useNavigate();
     const { user } = useAuth();
+
+    if (user?.role === 'MANAGER') {
+        return <Navigate to="/manager/dashboard" replace />;
+    }
 
     return (
         <main>
