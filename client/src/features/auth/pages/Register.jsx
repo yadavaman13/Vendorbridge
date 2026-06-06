@@ -193,7 +193,7 @@ const Register = () => {
                 <div className="auth-branding">
                     <div className="auth-copy">
                         <p className="auth-eyebrow">New account</p>
-                        <h1 className="form-title">Create your workspace</h1>
+                        <h1 className="form-title">Create your account</h1>
                         <p className="form-subtitle">
                             Set up your profile and join the platform in a few
                             quick steps.
