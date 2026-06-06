@@ -7,10 +7,10 @@
 
     .form-input {
         width: 100%;
-        padding: 14px 16px;
+        padding: 11px 14px;
         background-color: var(--bg-dark);
         border: 1px solid var(--border-color);
-        border-radius: 18px;
+        border-radius: 12px;
         color: var(--text-main);
         font-family: inherit;
         font-size: 1rem;
@@ -39,10 +39,10 @@
 
     .form-label {
         position: absolute;
-        left: 16px;
+        left: 14px;
         top: 22px;
         transform: translateY(-50%);
-        font-size: 1rem;
+        font-size: 0.95rem;
         font-weight: 500;
         color: var(--text-muted);
         background-color: var(--bg-dark);
@@ -53,7 +53,8 @@
     }
 
     .form-input:focus ~ .form-label,
-    .form-input:not(:placeholder-shown) ~ .form-label {
+    .form-input:not(:placeholder-shown) ~ .form-label,
+    &.has-value .form-label {
         top: 0;
         font-size: 0.78rem;
         font-weight: 700;
@@ -62,6 +63,26 @@
 
     .form-input:not(:focus):not(:placeholder-shown) ~ .form-label {
         color: var(--text-muted);
+    }
+
+    select.form-input {
+        appearance: none;
+        cursor: pointer;
+        padding-right: 40px;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23969593' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        background-size: 16px;
+
+        option {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+        }
+    }
+
+    textarea.form-input {
+        min-height: 100px;
+        resize: vertical;
     }
 
     &.has-password {
