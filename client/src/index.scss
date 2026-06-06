@@ -7,8 +7,11 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: var(--vb-font-family);
-    color: var(--vb-color-text);
+    font-family:
+        system-ui,
+        -apple-system,
+        sans-serif;
+    color: var(--text-main);
 }
 
 html,
@@ -18,9 +21,5 @@ body {
 }
 
 body {
-    min-height: 100vh;
-    background:
-        radial-gradient(circle at top, rgba(70, 138, 147, 0.12), transparent 35%),
-        linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
-    color: var(--vb-color-text);
+    background-color: var(--bg-dark);
 }

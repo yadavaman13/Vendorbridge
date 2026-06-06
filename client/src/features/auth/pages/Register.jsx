@@ -3,9 +3,11 @@ import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../hooks/useAuth.js';
 
 import FormGroup from '../components/FormGroup';
+import FormField from '../../shared/components/FormField';
 import {
     validateEmail,
     validatePasswordStrength,
+    validatePhone,
 } from '../utils/validation.utils';
 import PasswordMeter from '../components/PasswordMeter';
 import '../styles/auth.scss';
@@ -13,6 +15,8 @@ import '../styles/auth.scss';
 const createInitialErrors = () => ({
     username: '',
     email: '',
+    phone: '',
+    role: '',
     password: '',
 });
 
@@ -34,12 +38,16 @@ const Register = () => {
     const [formValues, setFormValues] = useState({
         username: '',
         email: '',
+        phone: '',
+        role: '',
         password: '',
     });
     const [errors, setErrors] = useState(createInitialErrors);
     const [touched, setTouched] = useState({
         username: false,
         email: false,
+        phone: false,
+        role: false,
         password: false,
     });
     const [toast, setToast] = useState(createInitialToast);
@@ -69,9 +77,6 @@ const Register = () => {
                 return 'Valid email is required.';
             }
 
-            // return emailPattern.test(fieldValue.trim())
-            //     ? ''
-            //     : 'Valid email is required.';
             return validateEmail(fieldValue, {
                 requiredMessage: 'Valid email is required.',
                 invalidMessage: 'Valid email is required.',
@@ -82,6 +87,14 @@ const Register = () => {
             return validatePasswordStrength(fieldValue);
         }
 
+        if (fieldName === 'phone') {
+            return validatePhone(fieldValue);
+        }
+
+        if (fieldName === 'role') {
+            return fieldValue?.trim() ? '' : 'Role is required.';
+        }
+
         return '';
     };
 
@@ -89,11 +102,13 @@ const Register = () => {
         const nextErrors = {
             username: validateField('username', formValues.username),
             email: validateField('email', formValues.email),
+            phone: validateField('phone', formValues.phone),
+            role: validateField('role', formValues.role),
             password: validateField('password', formValues.password),
         };
 
         setErrors(nextErrors);
-        setTouched({ username: true, email: true, password: true });
+        setTouched({ username: true, email: true, phone: true, role: true, password: true });
 
         return !Object.values(nextErrors).some(Boolean);
     };
@@ -140,6 +155,8 @@ const Register = () => {
             result = await handleRegister({
                 name: formValues.username,
                 email: formValues.email,
+                phone: formValues.phone,
+                role: formValues.role,
                 password: formValues.password,
             });
         } finally {
@@ -148,8 +165,8 @@ const Register = () => {
 
         if (result?.success) {
             setErrors(createInitialErrors());
-            setTouched({ username: false, email: false, password: false });
-            setFormValues({ username: '', email: '', password: '' });
+            setTouched({ username: false, email: false, phone: false, role: false, password: false });
+            setFormValues({ username: '', email: '', phone: '', role: '', password: '' });
             navigate('/verify-email', {
                 state: {
                     email: formValues.email.trim().toLowerCase(),
@@ -174,9 +191,9 @@ const Register = () => {
             });
         }
 
-        if (nextErrors.username || nextErrors.email || nextErrors.password) {
+        if (nextErrors.username || nextErrors.email || nextErrors.phone || nextErrors.role || nextErrors.password) {
             setErrors(nextErrors);
-            setTouched({ username: true, email: true, password: true });
+            setTouched({ username: true, email: true, phone: true, role: true, password: true });
             return;
         }
 
@@ -241,6 +258,36 @@ const Register = () => {
                         errorMessage={touched.email ? errors.email : ''}
                     />
                     <FormGroup
+                        label="Phone"
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        value={formValues.phone}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        disabled={isBusy}
+                        hasError={Boolean(touched.phone && errors.phone)}
+                        errorMessage={touched.phone ? errors.phone : ''}
+                    />
+                    <FormField
+                        id="role"
+                        name="role"
+                        type="select"
+                        value={formValues.role}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        disabled={isBusy}
+                        required
+                        options={[
+                            { value: 'ADMIN', label: 'Admin' },
+                            { value: 'PROCUREMENT_OFFICER', label: 'Procurement Officer' },
+                            { value: 'MANAGER', label: 'Manager' },
+                            { value: 'VENDOR', label: 'Vendor' },
+                        ]}
+                        placeholder="Select role"
+                        error={touched.role ? errors.role : ''}
+                    />
+                    <FormGroup
                         label="Password"
                         id="password"
                         name="password"
@@ -253,23 +300,6 @@ const Register = () => {
                         errorMessage={touched.password ? errors.password : ''}
                     />
                     <PasswordMeter password={formValues.password} />
-
-                    {/* {(passwordFocused || formValues.password.length > 0) && (
-                        <ul className="password-rules" aria-label="Password requirements">
-                            {passwordChecks.map((rule) => (
-                                <li
-                                    key={rule.label}
-                                    className={rule.valid ? 'is-valid' : ''}
-                                >
-                                    <span
-                                        className="password-rule-dot"
-                                        aria-hidden="true"
-                                    />
-                                    <span>{rule.label}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    )} */}
 
                     <div className="auth-actions">
                         <button

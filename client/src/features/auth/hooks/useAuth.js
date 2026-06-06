@@ -15,13 +15,13 @@ export const useAuth = () => {
 
     const { loading, setLoading, user, setUser, error, setError } = context;
 
-    const handleRegister = async ({ name, email, password }) => {
+    const handleRegister = async ({ name, email, phone, role, password }) => {
         setLoading(true);
         setError(null);
 
         let data;
         try {
-            data = await register({ name, email, password });
+            data = await register({ name, email, phone, role, password });
             console.log('Registration Failed', data);
             if (data?.user) {
                 setUser(data.user);

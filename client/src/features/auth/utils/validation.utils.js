@@ -64,6 +64,21 @@ export const validatePasswordMatch = (password, confirmPassword, options = {}) =
     return password === confirmPassword ? '' : mismatchMessage;
 };
 
+export const validatePhone = (value, options = {}) => {
+    const {
+        requiredMessage = 'Phone number is required.',
+        invalidMessage = 'Enter a valid 10-digit phone number.',
+    } = options;
+
+    const trimmedPhone = value?.trim() ?? '';
+
+    if (!trimmedPhone) {
+        return requiredMessage;
+    }
+
+    return /^\d{10}$/.test(trimmedPhone) ? '' : invalidMessage;
+};
+
 export const getPasswordChecks = (password) => [
     {
         label: 'At least 8 characters',

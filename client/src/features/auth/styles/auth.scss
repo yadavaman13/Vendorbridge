@@ -5,7 +5,7 @@ main.auth-page {
     justify-content: center;
     align-items: center;
     padding: 24px;
-    background: #ffffff;
+    background: var(--bg-dark);
 }
 
 .auth-form-container {
@@ -15,8 +15,8 @@ main.auth-page {
     gap: 1.1rem;
     border-radius: 28px;
     padding: 32px;
-    background: #ffffff;
-    border: 1px solid #e5e0f3;
+    background: var(--bg-dark);
+    border: 1px solid var(--border-color);
     box-shadow: none;
     backdrop-filter: none;
 }
@@ -45,7 +45,7 @@ main.auth-page {
     text-transform: uppercase;
     letter-spacing: 0.09em;
     font-weight: 700;
-    color: #6f6ee8;
+    color: var(--primary);
 }
 
 .form-header {
@@ -59,12 +59,12 @@ main.auth-page {
     font-size: 1.9rem;
     font-weight: 700;
     letter-spacing: -0.03em;
-    color: #1f1a37;
+    color: var(--text-main);
 }
 
 .form-subtitle {
     margin: 0;
-    color: #6a6779;
+    color: var(--text-muted);
     font-size: 0.96rem;
     line-height: 1.6;
 }
@@ -92,9 +92,9 @@ main.auth-page {
 .form-error--inline {
     padding: 12px 14px;
     border-radius: 16px;
-    background: rgba(230, 91, 101, 0.08);
-    color: #b43140;
-    border: 1px solid rgba(230, 91, 101, 0.12);
+    background: var(--danger);
+    color: var(--danger-dark);
+    border: 1px solid var(--danger);
 }
 
 .toast-banner {
@@ -108,15 +108,15 @@ main.auth-page {
     animation: toast-in 0.2s ease-out;
 
     &.is-success {
-        border: 1px solid rgba(34, 197, 94, 0.18);
-        background: rgba(34, 197, 94, 0.08);
-        color: #1d7a48;
+        border: 1px solid var(--success-text);
+        background: var(--success-text);
+        color: var(--success-text);
     }
 
     &.is-error {
-        border: 1px solid rgba(230, 91, 101, 0.18);
-        background: rgba(230, 91, 101, 0.08);
-        color: #b43140;
+        border: 1px solid var(--danger);
+        background: var(--danger);
+        color: var(--danger-dark);
     }
 }
 
@@ -126,13 +126,13 @@ main.auth-page {
     list-style: none;
     display: grid;
     gap: 0.5rem;
-    color: #1f1a37 !important;
+    color: var(--text-main) !important;
 
     li {
         display: flex;
         align-items: center;
         gap: 0.6rem;
-        color: #1f1a37 !important;
+        color: var(--text-main) !important;
         font-size: 0.88rem;
         line-height: 1.35;
     }
@@ -141,15 +141,15 @@ main.auth-page {
         width: 9px;
         height: 9px;
         border-radius: 50%;
-        background: rgba(31, 26, 55, 0.35);
+        background: var(--border-color);
         flex: 0 0 auto;
     }
 
     .is-valid {
-        color: #1f1a37 !important;
+        color: var(--text-main) !important;
 
         .password-rule-dot {
-            background: #1f1a37;
+            background: var(--text-main);
         }
     }
 }
@@ -164,31 +164,31 @@ main.auth-page {
 .form-footer {
     margin: 0;
     font-size: 0.95rem;
-    color: #6a6779;
+    color: var(--text-muted);
     text-align: center;
 }
 
 .auth-link {
-    color: #5a54b6;
+    color: var(--primary);
     text-decoration: none;
     font-weight: 700;
     transition: color 0.2s ease;
 
     &:hover {
-        color: #3e3a94;
+        color: var(--primary-hover);
     }
 }
 
 .forgot-password-copy {
     margin: 0;
-    color: #6a6779;
+    color: var(--text-muted);
     font-size: 0.95rem;
     line-height: 1.5;
 }
 
 .otp-help {
     margin: -0.25rem 0 0;
-    color: #6a6779;
+    color: var(--text-muted);
     font-size: 0.9rem;
     line-height: 1.5;
 }

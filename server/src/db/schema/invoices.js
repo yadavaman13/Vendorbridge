@@ -1,6 +1,6 @@
 import {
   pgTable,
-  uuid,
+  serial,
   varchar,
   integer,
   numeric,
@@ -17,15 +17,15 @@ import { vendors } from "./vendors.js";
 import { users } from "./users.js";
 
 export const invoices = pgTable("invoices", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: serial("id").primaryKey(),
 
   invoiceNumber: varchar("invoice_number", { length: 50 }).notNull().unique(),
 
-  poId: uuid("po_id").unique().references(() => purchaseOrders.id),
+  poId: integer("po_id").unique().references(() => purchaseOrders.id),
 
-  vendorId: uuid("vendor_id").references(() => vendors.id),
+  vendorId: integer("vendor_id").references(() => vendors.id),
 
-  issuedBy: uuid("issued_by").references(() => users.id),
+  issuedBy: integer("issued_by").references(() => users.id),
 
   status: invoiceStatusEnum("status").default("GENERATED"),
 
