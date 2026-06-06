@@ -19,7 +19,7 @@ const categoriesRoutes = Router();
  * @description List categories
  * @access Private
  */
-categoriesRoutes.get('/', authUser, getCategoriesController);
+categoriesRoutes.get('/', getCategoriesController);
 
 /**
  * @route POST /api/categories
