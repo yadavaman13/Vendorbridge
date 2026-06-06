@@ -14,6 +14,7 @@ export const vendors = pgTable("vendors", {
   id: uuid("id").defaultRandom().primaryKey(),
 
   userId: uuid("user_id")
+    .unique()
     .notNull()
     .references(() => users.id, {
       onDelete: "cascade",
@@ -25,7 +26,9 @@ export const vendors = pgTable("vendors", {
 
   gstNumber: varchar("gst_number", {
     length: 15,
-  }).notNull(),
+  })
+    .unique()
+    .notNull(),
 
   categoryId: uuid("category_id")
     .notNull()
@@ -37,11 +40,11 @@ export const vendors = pgTable("vendors", {
 
   contactEmail: varchar("contact_email", {
     length: 100,
-  }),
+  }).notNull(),
 
   contactPhone: varchar("contact_phone", {
     length: 15,
-  }),
+  }).notNull(),
 
   address: text("address"),
 
@@ -49,5 +52,8 @@ export const vendors = pgTable("vendors", {
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
 
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
 });
