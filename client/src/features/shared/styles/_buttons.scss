@@ -1,0 +1,75 @@
+@mixin button-base {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: var(--border-radius);
+    border: none;
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        opacity 0.2s ease;
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+}
+
+.btn {
+    @include button-base;
+
+    &.btn-primary {
+        background-color: var(--primary);
+        color: #fff;
+
+        &:hover {
+            background-color: rgba(70, 138, 147, 0.88);
+        }
+
+        &:active {
+            background-color: rgba(70, 138, 147, 0.92);
+        }
+    }
+
+    &.btn-transparent {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+
+        &:hover {
+            color: var(--text-muted);
+            background-color: transparent;
+        }
+    }
+
+    &.btn-primary-transparent {
+        background: transparent;
+        border: none;
+        color: var(--primary);
+
+        &:hover {
+            color: var(--primary);
+            background-color: transparent;
+        }
+    }
+
+    &.btn-auth-submit {
+        width: 100%;
+        background-color: #11101f;
+        color: #fff;
+        border-radius: 18px;
+        padding: 14px 18px;
+
+        &:hover {
+            background-color: rgba(17, 16, 31, 0.92);
+        }
+
+        &:active {
+            background-color: rgba(17, 16, 31, 0.96);
+        }
+    }
+}

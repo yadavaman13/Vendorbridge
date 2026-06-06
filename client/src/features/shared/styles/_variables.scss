@@ -1,0 +1,31 @@
+:root {
+    --primary: #468a93;
+    --primary-hover: #3a7178;
+
+    --bg-dark: #171615;
+    --bg-sidebar: #1e1d1b;
+    --bg-message: #1e1d1b;
+    --bg-input: #1e1d1c;
+    --bg-active-chat: #252421;
+    --bg-card: #1e1e1e;
+
+    --text-main: #ffffff;
+    --text-muted: #a0a0a0;
+    --text-primary: var(--primary);
+
+    --btn-send: #7a7978;
+    --icon-color: #969593;
+
+    --border-color: #333333;
+    --border-radius: 8px;
+
+    --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+
+    // Toastify Overrides
+    --toastify-color-dark: #1e1d1b;
+    --toastify-color-success: #22c55e;
+    --toastify-color-error: #ff4d4d;
+    --toastify-text-color-dark: var(--text-main);
+    --toastify-font-family: var(--font-family);
+    --toastify-border-radius: 12px;
+}
