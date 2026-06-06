@@ -1,0 +1,334 @@
+@use '../styles/variables' as *;
+@use '../styles/mixins' as *;
+
+/* ── Dashboard Root ───────────────────────────────────────────────── */
+.dashboard-root {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ── Greeting Row ─────────────────────────────────────────────────── */
+.dash-greeting {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    .dash-greeting-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 4px;
+    }
+
+    .dash-greeting-sub {
+        font-size: 13px;
+        color: var(--text-muted);
+    }
+
+    .dash-new-rfq-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background-color: var(--primary);
+        color: var(--on-primary);
+        border: none;
+        border-radius: var(--border-radius);
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.15s ease, transform 0.1s ease;
+
+        &:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+    }
+}
+
+/* ── Stat Cards Grid ──────────────────────────────────────────────── */
+.dash-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+
+    @media (max-width: 1200px) { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 640px)  { grid-template-columns: 1fr; }
+}
+
+.stat-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+
+    &:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+    }
+
+    .stat-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 14px;
+    }
+
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .stat-value {
+        font-size: 32px;
+        font-weight: 800;
+        color: var(--text-main);
+        line-height: 1;
+        margin-bottom: 4px;
+    }
+
+    .stat-label {
+        font-size: 13px;
+        color: var(--text-muted);
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+
+    .stat-change {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 20px;
+
+        &.up {
+            background-color: var(--success-bg-10);
+            color: var(--success-3);
+        }
+        &.down {
+            background-color: var(--danger-bg-08);
+            color: var(--danger);
+        }
+        &.warning {
+            background-color: var(--warning-bg);
+            color: var(--warning);
+        }
+    }
+}
+
+/* ── Bottom Grid ──────────────────────────────────────────────────── */
+.dash-bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 18px;
+    align-items: start;
+
+    @media (max-width: 1100px) { grid-template-columns: 1fr; }
+}
+
+.dash-right-col {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* ── Shared Card ──────────────────────────────────────────────────── */
+.dash-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 22px 24px;
+    box-shadow: var(--shadow-sm);
+
+    .dash-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+    }
+
+    .dash-card-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-main);
+    }
+
+    .dash-card-subtitle {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    .dash-view-all-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--primary);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 6px;
+        transition: background-color 0.15s ease;
+
+        &:hover { background-color: var(--primary-faint); }
+    }
+}
+
+/* ── PO Table ─────────────────────────────────────────────────────── */
+.dash-po-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th, td {
+        padding: 12px 14px;
+        text-align: left;
+        font-size: 13px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        background-color: var(--bg-app);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    tbody tr {
+        transition: background-color 0.12s ease;
+        &:hover td { background-color: var(--primary-faint); }
+        &:last-child td { border-bottom: none; }
+    }
+
+    .po-id-cell {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .po-amount-cell {
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    .po-date-cell {
+        color: var(--text-muted);
+        white-space: nowrap;
+    }
+}
+
+/* ── Bar Chart ────────────────────────────────────────────────────── */
+.chart-total {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 16px;
+
+    .chart-total-val {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--text-main);
+    }
+    .chart-total-label {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+}
+
+.bar-chart-wrap {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    height: 120px;
+    padding-top: 8px;
+}
+
+.bar-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    height: 100%;
+    gap: 6px;
+
+    .bar-fill {
+        width: 100%;
+        background: linear-gradient(180deg, var(--primary) 0%, rgba(113, 75, 103, 0.5) 100%);
+        border-radius: 5px 5px 0 0;
+        min-height: 4px;
+        transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+        &:hover {
+            background: linear-gradient(180deg, var(--primary-hover) 0%, var(--primary) 100%);
+            cursor: default;
+        }
+    }
+
+    .bar-label {
+        font-size: 10px;
+        color: var(--text-muted);
+        font-weight: 600;
+        text-align: center;
+    }
+}
+
+/* ── Quick Actions ────────────────────────────────────────────────── */
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.quick-action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 8px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--bg-app);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: center;
+
+    &:hover {
+        border-color: var(--action-color, var(--primary));
+        background-color: #fff;
+        box-shadow: var(--shadow-sm);
+        transform: translateY(-1px);
+    }
+
+    .qa-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .qa-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-muted);
+    }
+}

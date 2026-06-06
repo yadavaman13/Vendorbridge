@@ -120,7 +120,7 @@ async function sendCredentialsEmail({ to, name, role, password }) {
  */
 async function sendTokenResponse({ res, user, vendor, message }) {
   const token = jwt.sign(
-    { id: user.id, email: user.email },
+    { id: user.id, email: user.email, role: user.role },
     envConfig.JWT_SECRET,
     {
       expiresIn: "1d",
@@ -684,6 +684,7 @@ async function getMeController(req, res) {
         id: user.id,
         email: user.email,
         name: user.name,
+        role: user.role,
       },
     });
   } catch (error) {

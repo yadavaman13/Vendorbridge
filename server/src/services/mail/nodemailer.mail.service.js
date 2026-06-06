@@ -10,7 +10,7 @@ if (shouldInitNodeMailer) {
         service: 'gmail',
         auth: {
             type: 'OAuth2',
-            user: envConfig.GOOGLE_USER,
+            user: envConfig.GOOGLE_SENDER_EMAIL,
             clientId: envConfig.GOOGLE_CLIENT_ID,
             clientSecret: envConfig.GOOGLE_CLIENT_SECRET,
             refreshToken: envConfig.GOOGLE_REFRESH_TOKEN,
@@ -27,7 +27,7 @@ if (shouldInitNodeMailer) {
         });
 }
 
-async function sendEmailWithNodeMailer({ to, subject, html, text }) {
+async function sendEmailWithNodeMailer({ to, subject, html, text, attachments }) {
     if (!nodeMailerTransporter) {
         throw new Error(
             'NodeMailer is not initialized. NODE_ENV must be "development".',
@@ -35,11 +35,12 @@ async function sendEmailWithNodeMailer({ to, subject, html, text }) {
     }
 
     const mailOptions = {
-        from: envConfig.GOOGLE_USER,
+        from: envConfig.GOOGLE_SENDER_EMAIL,
         to,
         subject,
         html,
         text,
+        attachments: attachments || [],
     };
 
     const details = await nodeMailerTransporter.sendMail(mailOptions);

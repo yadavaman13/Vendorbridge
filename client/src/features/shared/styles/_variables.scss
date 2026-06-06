@@ -1,55 +1,61 @@
 :root {
+    /* Brand */
     --primary: #714b67;
     --primary-hover: #5f3954;
     --on-primary: #ffffff;
+    --primary-faint: rgba(113, 75, 103, 0.08);
+    --primary-light: rgba(113, 75, 103, 0.15);
 
-    /* primary background for the app (updated theme) */
-    --bg-dark: #ffffff;
-    --bg-sidebar: #1e1d1b;
-    --bg-message: #1e1d1b;
-    --bg-input: #1e1d1c;
-    --bg-active-chat: #252421;
+    /* App backgrounds — light theme only */
+    --bg-app: #f4f2f8;
+    --bg-dark: #f4f2f8;
+    --bg-sidebar: #ffffff;
     --bg-card: #ffffff;
+    --bg-input: #f9f8fc;
 
-    /* text tokens adjusted for light background */
+    /* Typography */
     --text-main: #1f1a37;
     --text-muted: #6a6779;
     --text-primary: var(--primary);
 
-    --btn-send: #7a7978;
-    --icon-color: #969593;
-
-    /* border + radius */
+    /* Borders & radius */
     --border-color: #e5e0f3;
     --border-radius: 8px;
+    --border-radius-lg: 12px;
 
+    /* Typography */
     --font-family: 'Inter', system-ui, -apple-system, sans-serif;
 
-    /* Toastify Overrides */
-    --toastify-color-dark: #1e1d1b;
-    --toastify-color-success: #22c55e;
-    --toastify-color-error: #ff4d4d;
-    --toastify-text-color-dark: var(--text-main);
-    --toastify-font-family: var(--font-family);
-    --toastify-border-radius: 12px;
-
-    /* keep semantic success/danger tokens */
+    /* Semantic colours */
     --danger: #e65b65;
     --danger-dark: #b43140;
-    --success-text: #a7f3d0;
-    --success-2: #c8f0d4;
-    --success-3: #3ddc84;
     --danger-bg-08: rgba(230, 91, 101, 0.08);
+
+    --success-3: #22c55e;
+    --success-2: #bbf7d0;
+    --success-text: #15803d;
     --success-bg-10: rgba(34, 197, 94, 0.1);
 
-    /* primary alpha variant */
-    --primary-faint: rgba(113, 75, 103, 0.08);
+    --warning: #f59e0b;
+    --warning-bg: rgba(245, 158, 11, 0.1);
 
-    /* overlays & shadows used by modals/toasts */
-    --overlay-dark-58: rgba(0, 0, 0, 0.58);
-    --overlay-dark-98: rgba(30, 30, 30, 0.98);
+    --info: #3b82f6;
+    --info-bg: rgba(59, 130, 246, 0.1);
+
+    /* Shadows */
+    --shadow-sm: 0 1px 4px rgba(113, 75, 103, 0.06);
+    --shadow-md: 0 4px 16px rgba(113, 75, 103, 0.08);
+    --shadow-lg: 0 8px 32px rgba(113, 75, 103, 0.12);
+
+    /* Overlays */
+    --overlay-dark-58: rgba(0, 0, 0, 0.45);
     --overlay-white-10: rgba(255, 255, 255, 0.1);
     --alert-border-30: rgba(255, 128, 128, 0.3);
     --alert-bg-08: rgba(255, 77, 77, 0.08);
-    --shadow-lg: rgba(0, 0, 0, 0.45);
+
+    /* Toastify */
+    --toastify-color-success: #22c55e;
+    --toastify-color-error: #ff4d4d;
+    --toastify-font-family: var(--font-family);
+    --toastify-border-radius: 12px;
 }
