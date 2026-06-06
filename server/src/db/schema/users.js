@@ -1,6 +1,6 @@
 import {
   pgTable,
-  uuid,
+  serial,
   varchar,
   timestamp,
   boolean,
@@ -9,7 +9,7 @@ import {
 import { userRoleEnum } from "./enums.js";
 
 export const users = pgTable("users", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: serial("id").primaryKey(),
 
   name: varchar("name", { length: 50 }).notNull(),
 
@@ -27,11 +27,14 @@ export const users = pgTable("users", {
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
 
-  deletedAt: timestamp("deleted_at").nullable(),
+  deletedAt: timestamp("deleted_at"),
 
   isActive: boolean("is_active").default(true).notNull(),
 
   isVerified: boolean("is_verified").default(false).notNull(),
 
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
 });
