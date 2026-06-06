@@ -12,27 +12,42 @@ async function authUser(req, res, next) {
       });
     }
 
-    const isBlacklisted = await redis.get(`blacklist:${token}`);
-    if (isBlacklisted) {
+    // Verify JWT first — this is synchronous and doesn't need Redis
+    let decoded;
+    try {
+      decoded = jwt.verify(token, envConfig.JWT_SECRET);
+    } catch (jwtErr) {
       return res.status(401).json({
-        message: "Unauthorized. blacklisted token.",
+        message: "Unauthorized. Invalid or expired token.",
         success: false,
-        error: "Token is blacklisted",
       });
     }
 
-    const decoded = jwt.verify(token, envConfig.JWT_SECRET);
+    // Check Redis blacklist — gracefully skip if Redis is temporarily unavailable
+    try {
+      const isBlacklisted = await redis.get(`blacklist:${token}`);
+      if (isBlacklisted) {
+        return res.status(401).json({
+          message: "Unauthorized. Token has been revoked.",
+          success: false,
+        });
+      }
+    } catch (redisErr) {
+      // Redis is down/reconnecting — log the warning but don't block the request
+      console.warn("[Auth] Redis unavailable for blacklist check, proceeding without it:", redisErr.message);
+    }
+
     req.user = {
       id: decoded.id,
       email: decoded.email,
+      role: decoded.role,
     };
 
     next();
   } catch (error) {
-    console.log("Auth middleware error:", error);
+    console.error("Auth middleware error:", error.message);
     return res.status(401).json({
-      message: "Unauthorized. Invalid token.",
-      error: error.message,
+      message: "Unauthorized. Authentication failed.",
       success: false,
     });
   }
@@ -47,24 +62,18 @@ async function isAdmin(req, res, next) {
     const { getUserByEmail } = await import("../services/user.service.js");
     const user = await getUserByEmail(req.user.email);
     if (!user) {
-      return res
-        .status(404)
-        .json({ message: "User not found", success: false });
+      return res.status(404).json({ message: "User not found", success: false });
     }
 
     if (user.role !== "ADMIN") {
-      return res
-        .status(403)
-        .json({ message: "Forbidden. Admins only.", success: false });
+      return res.status(403).json({ message: "Forbidden. Admins only.", success: false });
     }
 
     req.user = { ...req.user, role: user.role, id: user.id };
     next();
   } catch (err) {
-    console.error("isAdmin error:", err);
-    return res
-      .status(500)
-      .json({ message: "Internal server error", success: false });
+    console.error("isAdmin error:", err.message);
+    return res.status(500).json({ message: "Internal server error", success: false });
   }
 }
 
@@ -77,24 +86,18 @@ async function isManager(req, res, next) {
     const { getUserByEmail } = await import("../services/user.service.js");
     const user = await getUserByEmail(req.user.email);
     if (!user) {
-      return res
-        .status(404)
-        .json({ message: "User not found", success: false });
+      return res.status(404).json({ message: "User not found", success: false });
     }
 
     if (user.role !== "MANAGER") {
-      return res
-        .status(403)
-        .json({ message: "Forbidden. Managers only.", success: false });
+      return res.status(403).json({ message: "Forbidden. Managers only.", success: false });
     }
 
     req.user = { ...req.user, role: user.role, id: user.id };
     next();
   } catch (err) {
-    console.error("isManager error:", err);
-    return res
-      .status(500)
-      .json({ message: "Internal server error", success: false });
+    console.error("isManager error:", err.message);
+    return res.status(500).json({ message: "Internal server error", success: false });
   }
 }
 
@@ -107,24 +110,21 @@ async function isOfficerOrAdmin(req, res, next) {
     const { getUserByEmail } = await import("../services/user.service.js");
     const user = await getUserByEmail(req.user.email);
     if (!user) {
-      return res
-        .status(404)
-        .json({ message: "User not found", success: false });
+      return res.status(404).json({ message: "User not found", success: false });
     }
 
-    if (user.role !== "ADMIN" && user.role !== "PROCUREMENT_OFFICER") {
-      return res
-        .status(403)
-        .json({ message: "Forbidden. Admins or Procurement Officers only.", success: false });
+    if (user.role !== "ADMIN" && user.role !== "PROCUREMENT_OFFICER" && user.role !== "MANAGER") {
+      return res.status(403).json({
+        message: "Forbidden. Admins, Managers, or Procurement Officers only.",
+        success: false,
+      });
     }
 
     req.user = { ...req.user, role: user.role, id: user.id };
     next();
   } catch (err) {
-    console.error("isOfficerOrAdmin error:", err);
-    return res
-      .status(500)
-      .json({ message: "Internal server error", success: false });
+    console.error("isOfficerOrAdmin error:", err.message);
+    return res.status(500).json({ message: "Internal server error", success: false });
   }
 }
 
@@ -137,24 +137,18 @@ async function isVendor(req, res, next) {
     const { getUserByEmail } = await import("../services/user.service.js");
     const user = await getUserByEmail(req.user.email);
     if (!user) {
-      return res
-        .status(404)
-        .json({ message: "User not found", success: false });
+      return res.status(404).json({ message: "User not found", success: false });
     }
 
     if (user.role !== "VENDOR") {
-      return res
-        .status(403)
-        .json({ message: "Forbidden. Vendors only.", success: false });
+      return res.status(403).json({ message: "Forbidden. Vendors only.", success: false });
     }
 
     req.user = { ...req.user, role: user.role, id: user.id };
     next();
   } catch (err) {
-    console.error("isVendor error:", err);
-    return res
-      .status(500)
-      .json({ message: "Internal server error", success: false });
+    console.error("isVendor error:", err.message);
+    return res.status(500).json({ message: "Internal server error", success: false });
   }
 }
 

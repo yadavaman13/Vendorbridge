@@ -1,15 +1,15 @@
 @use './features/shared/styles/variables';
 @use './features/shared/styles/button';
 @use './features/shared/styles/mixins' as *;
+@use './features/purchase-order/styles/purchase-order';
+@use './features/shared/styles/home-page';
+@use './features/shared/styles/pages';
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family:
-        system-ui,
-        -apple-system,
-        sans-serif;
+    font-family: var(--font-family);
     color: var(--text-main);
 }
 
@@ -20,5 +20,5 @@ body {
 }
 
 body {
-    background-color: var(--bg-dark);
+    background-color: var(--bg-app);
 }
