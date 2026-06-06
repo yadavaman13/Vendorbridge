@@ -4,6 +4,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import envConfig from './config/envConfig.js';
 import authRoutes from './routes/auth.routes.js';
+import categoriesRoutes from './routes/categories.routes.js';
 
 const app = express();
 
@@ -18,5 +19,6 @@ app.use(
 app.use(morgan('combined')); //  Logging middleware for better debugging
 
 app.use('/api/auth', authRoutes);
+app.use('/api/categories', categoriesRoutes);
 
 export default app;
