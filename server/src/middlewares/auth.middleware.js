@@ -4,10 +4,12 @@ import redis from '../config/cache.js';
 import { getUserByEmail } from '../services/user.service.js';
 import { sendResponse } from '../utils/response.utlis.js';
 
+/**
+ * Load and validate the authenticated user from DB.
+ * Returns null if user is deleted or inactive.
+ */
 async function loadAuthenticatedUser(email) {
-    if (!email) {
-        return null;
-    }
+    if (!email) return null;
 
     const user = await getUserByEmail(email);
 
@@ -18,6 +20,9 @@ async function loadAuthenticatedUser(email) {
     return user;
 }
 
+/**
+ * Factory that creates a role-guard middleware accepting any of the given roles.
+ */
 function createRoleGuard(allowedRoles) {
     return async function roleGuard(req, res, next) {
         try {
@@ -30,6 +35,7 @@ function createRoleGuard(allowedRoles) {
                 });
             }
 
+            // Optimistic fast-path: role already known and allowed
             const user =
                 req.user?.role && allowedRoles.includes(req.user.role)
                     ? req.user
@@ -47,9 +53,9 @@ function createRoleGuard(allowedRoles) {
             if (!allowedRoles.includes(user.role)) {
                 return sendResponse({
                     res,
-                    statusCode: 401,
+                    statusCode: 403,
                     success: false,
-                    message: 'Unauthorized for this action.',
+                    message: 'Forbidden. Insufficient permissions.',
                 });
             }
 
@@ -63,7 +69,7 @@ function createRoleGuard(allowedRoles) {
 
             next();
         } catch (error) {
-            console.error('Role guard error:', error);
+            console.error('Role guard error:', error.message);
             return sendResponse({
                 res,
                 statusCode: 500,
@@ -75,6 +81,11 @@ function createRoleGuard(allowedRoles) {
     };
 }
 
+/**
+ * @middleware authUser
+ * Validates the JWT cookie and attaches user context to req.user.
+ * Redis blacklist check is gracefully skipped if Redis is unavailable.
+ */
 async function authUser(req, res, next) {
     try {
         const token = req.cookies.token;
@@ -88,26 +99,42 @@ async function authUser(req, res, next) {
             });
         }
 
-        const isBlacklisted = await redis.get(`blacklist:${token}`);
-        if (isBlacklisted) {
+        // Verify JWT first — synchronous, no Redis dependency
+        let decoded;
+        try {
+            decoded = jwt.verify(token, envConfig.JWT_SECRET);
+        } catch (jwtErr) {
             return sendResponse({
                 res,
                 statusCode: 401,
                 success: false,
-                message: 'Unauthorized. Token is blacklisted.',
-                error: 'Token is blacklisted',
+                message: 'Unauthorized. Invalid or expired token.',
             });
         }
 
-        const decoded = jwt.verify(token, envConfig.JWT_SECRET);
-        const user = await loadAuthenticatedUser(decoded.email);
+        // Redis blacklist check — skip gracefully if Redis is temporarily down
+        try {
+            const isBlacklisted = await redis.get(`blacklist:${token}`);
+            if (isBlacklisted) {
+                return sendResponse({
+                    res,
+                    statusCode: 401,
+                    success: false,
+                    message: 'Unauthorized. Token has been revoked.',
+                });
+            }
+        } catch (redisErr) {
+            console.warn('[Auth] Redis unavailable for blacklist check, proceeding without it:', redisErr.message);
+        }
 
+        // Load full user from DB to verify they still exist and are active
+        const user = await loadAuthenticatedUser(decoded.email);
         if (!user) {
             return sendResponse({
                 res,
                 statusCode: 404,
                 success: false,
-                message: 'User not found.',
+                message: 'User not found or account is inactive.',
             });
         }
 
@@ -120,24 +147,27 @@ async function authUser(req, res, next) {
 
         next();
     } catch (error) {
-        console.error('Auth middleware error:', error);
+        console.error('Auth middleware error:', error.message);
         return sendResponse({
             res,
             statusCode: 401,
             success: false,
-            message: 'Unauthorized. Invalid token.',
-            error: error.message,
+            message: 'Unauthorized. Authentication failed.',
         });
     }
 }
 
+// ── Role guard exports ────────────────────────────────────────────────────────
+
+/** Allow any of the given roles (variadic) */
 const allowRoles = (...roles) => createRoleGuard(roles);
-const isAdmin = createRoleGuard(['ADMIN']);
-const isManager = createRoleGuard(['MANAGER']);
-const isProcurementOfficer = createRoleGuard(['PROCUREMENT_OFFICER']);
-const isOfficerOrAdmin = createRoleGuard(['ADMIN', 'PROCUREMENT_OFFICER']);
-const isAdminOrProcurementOfficer = isOfficerOrAdmin;
-const isVendor = createRoleGuard(['VENDOR']);
+
+const isAdmin                    = createRoleGuard(['ADMIN']);
+const isManager                  = createRoleGuard(['MANAGER']);
+const isProcurementOfficer       = createRoleGuard(['PROCUREMENT_OFFICER']);
+const isOfficerOrAdmin           = createRoleGuard(['ADMIN', 'PROCUREMENT_OFFICER', 'MANAGER']);
+const isAdminOrProcurementOfficer = isOfficerOrAdmin; // alias
+const isVendor                   = createRoleGuard(['VENDOR']);
 
 export {
     authUser,
