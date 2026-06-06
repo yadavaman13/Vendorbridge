@@ -22,7 +22,7 @@ export const users = pgTable("users", {
   password: varchar("password", { length: 255 }).notNull(),
   profilePicture: varchar("profile_picture", {
     length: 500,
-  }),
+  }).default("https://ik.imagekit.io/ji8wynr3i/hackathon/images/userImage.avif"),
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
 
