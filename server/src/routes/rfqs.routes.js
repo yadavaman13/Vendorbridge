@@ -16,7 +16,17 @@ import {
     authUser,
     isAdminOrProcurementOfficer,
     isProcurementOfficer,
+    isVendor,
+    isOfficerOrAdmin,
 } from '../middlewares/auth.middleware.js';
+import {
+    createQuotationController,
+    getQuotationComparisonController,
+} from '../controllers/quotations.controller.js';
+import {
+    createQuotationValidator,
+    rfqIdParamValidator,
+} from '../validators/quotations.validators.js';
 import {
     addRFQItemValidator,
     createRFQValidator,
@@ -174,6 +184,32 @@ rfqsRoutes.patch(
     isProcurementOfficer,
     updateRFQStatusValidator,
     updateRFQStatusController,
+);
+
+/**
+ * @route POST /api/rfqs/:rfqId/quotations
+ * @description Create a quotation draft for an invited RFQ
+ * @access Private (VENDOR)
+ */
+rfqsRoutes.post(
+    '/:rfqId/quotations',
+    authUser,
+    isVendor,
+    createQuotationValidator,
+    createQuotationController,
+);
+
+/**
+ * @route GET /api/rfqs/:rfqId/quotations/comparison
+ * @description Compare vendor quotations for one RFQ
+ * @access Private (ADMIN, PROCUREMENT_OFFICER, MANAGER)
+ */
+rfqsRoutes.get(
+    '/:rfqId/quotations/comparison',
+    authUser,
+    isOfficerOrAdmin,
+    rfqIdParamValidator,
+    getQuotationComparisonController,
 );
 
 export default rfqsRoutes;

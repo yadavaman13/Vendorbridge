@@ -9,6 +9,7 @@ import activityLogRoutes from './routes/activity-log.routes.js';
 import userRoutes from "./routes/users.routes.js";
 import categoriesRoutes from './routes/categories.routes.js';
 import rfqsRoutes from './routes/rfqs.routes.js';
+import quotationsRoutes from './routes/quotations.routes.js';
 
 const app = express();
 
@@ -28,5 +29,6 @@ app.use('/api', activityLogRoutes);
 app.use("/api/users", userRoutes);
 app.use('/api/categories', categoriesRoutes);
 app.use('/api/rfqs', rfqsRoutes);
+app.use('/api/quotations', quotationsRoutes);
 
 export default app;
