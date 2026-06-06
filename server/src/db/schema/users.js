@@ -20,7 +20,6 @@ export const users = pgTable("users", {
   role: userRoleEnum("role").notNull(),
 
   password: varchar("password", { length: 255 }).notNull(),
-
   profilePicture: varchar("profile_picture", {
     length: 500,
   }),

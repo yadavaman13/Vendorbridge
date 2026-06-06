@@ -36,18 +36,6 @@ export const vendors = pgTable("vendors", {
     .notNull()
     .references(() => categories.id),
 
-  contactPerson: varchar("contact_person", {
-    length: 100,
-  }),
-
-  contactEmail: varchar("contact_email", {
-    length: 100,
-  }).notNull(),
-
-  contactPhone: varchar("contact_phone", {
-    length: 15,
-  }).notNull(),
-
   address: text("address"),
 
   status: approvalStatusEnum("status").default("PENDING").notNull(),
