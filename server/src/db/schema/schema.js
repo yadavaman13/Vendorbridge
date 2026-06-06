@@ -1,6 +1,10 @@
 import { boolean, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
 
-const users = pgTable('users', {
+import { purchaseOrders } from './purchaseOrders.js';
+import { invoices } from './invoices.js';
+import { activityLogs } from './activityLogs.js';
+
+const usersSchema = pgTable('users', {
     id: serial('id').primaryKey(),
     email: text('email').notNull().unique(),
     password: text('password').notNull(),
@@ -14,4 +18,4 @@ const users = pgTable('users', {
         .notNull(),
 });
 
-export { users };
+export { usersSchema as users, purchaseOrders, invoices, activityLogs };
