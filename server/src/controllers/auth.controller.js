@@ -11,13 +11,17 @@ import jwt from "jsonwebtoken";
 import envConfig from "../config/envConfig.js";
 import {
   getForgotPasswordOtpHtml,
+  getOtpHtml,
   normalizeEmail,
   OTP_PURPOSES,
   resendOtp,
   verifyOtp,
+  issueOtp,
 } from "../utils/otp.utils.js";
+import { sendEmail } from "../services/mail/mail.service.js";
 import redis from "../config/cache.js";
 import { users } from "../db/schema/users.js";
+import { vendors } from "../db/schema/vendors.js";
 
 const ALLOWED_ROLES = new Set([
   "ADMIN",
@@ -32,6 +36,83 @@ function normalizeRole(roleValue) {
   }
 
   return roleValue.trim().toUpperCase();
+}
+
+async function sendCredentialsEmail({ to, name, role, password }) {
+  const displayName = name || "there";
+  const safeRole = role || "USER";
+
+  try {
+    await sendEmail({
+      to,
+      subject: "Your Vendorbridge account credentials",
+      text: `Hello ${displayName},\n\nYour Vendorbridge account has been created.\n\nEmail: ${to}\nPassword: ${password}\nRole: ${safeRole}\n\nPlease sign in and change your password after your first login.`,
+      html: `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vendorbridge Credentials</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f5f7fb;
+        color: #1f2937;
+        padding: 24px;
+      }
+      .card {
+        max-width: 600px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      }
+      .label {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #6b7280;
+        margin-top: 16px;
+      }
+      .value {
+        font-size: 16px;
+        font-weight: 600;
+        margin-top: 6px;
+        color: #111827;
+        word-break: break-word;
+      }
+      .note {
+        margin-top: 20px;
+        padding: 12px 14px;
+        background: #eef2ff;
+        border-radius: 10px;
+        color: #3730a3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h2>Your Vendorbridge account is ready</h2>
+      <p>Hello ${displayName}, your account has been created.</p>
+
+      <div class="label">Email</div>
+      <div class="value">${to}</div>
+
+      <div class="label">Password</div>
+      <div class="value">${password}</div>
+
+      <div class="label">Role</div>
+      <div class="value">${safeRole}</div>
+
+      <div class="note">Please sign in and change your password after your first login.</div>
+    </div>
+  </body>
+</html>`,
+    });
+  } catch (error) {
+    console.error("Failed to send credentials email:", error);
+  }
 }
 
 /**
@@ -122,6 +203,28 @@ async function registerUserController(req, res) {
         isVerified: false,
       })
       .returning();
+
+    await db
+      .insert(vendors)
+      .values({
+        userId: createdUser.id,
+        companyName: req.body.companyName.trim(),
+        gstNumber: req.body.gstNumber.trim(),
+        categoryId: parseInt(req.body.categoryId),
+        address: req.body.address ? req.body.address.trim() : null,
+        status: "PENDING",
+      });
+
+    try {
+      await issueOtp({
+        email: normalizedEmail,
+        purpose: OTP_PURPOSES.VERIFY_EMAIL,
+        subject: "Verify your email address",
+        buildHtml: getOtpHtml,
+      });
+    } catch (otpError) {
+      console.error("Error generating verification OTP during registration:", otpError);
+    }
 
     return sendResponse({
       res,
@@ -238,7 +341,8 @@ async function adminCreateUserController(req, res) {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(passwordValue, 10);
+    const plainPassword = passwordValue;
+    const hashedPassword = await bcrypt.hash(plainPassword, 10);
     const user = await createUser({
       email: normalizedEmail,
       password: hashedPassword,
@@ -246,6 +350,13 @@ async function adminCreateUserController(req, res) {
       phone: phoneValue,
       role: "MANAGER",
       isVerified: true,
+    });
+
+    await sendCredentialsEmail({
+      to: normalizedEmail,
+      name: nameValue,
+      role: "MANAGER",
+      password: plainPassword,
     });
 
     return sendResponse({
@@ -299,7 +410,8 @@ async function managerCreateUserController(req, res) {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(passwordValue, 10);
+    const plainPassword = passwordValue;
+    const hashedPassword = await bcrypt.hash(plainPassword, 10);
     const user = await createUser({
       email: normalizedEmail,
       password: hashedPassword,
@@ -307,6 +419,13 @@ async function managerCreateUserController(req, res) {
       phone: phoneValue,
       role: "PROCUREMENT_OFFICER",
       isVerified: true,
+    });
+
+    await sendCredentialsEmail({
+      to: normalizedEmail,
+      name: nameValue,
+      role: "PROCUREMENT_OFFICER",
+      password: plainPassword,
     });
 
     return sendResponse({

@@ -6,5 +6,9 @@ package-lock.json
 .ai/
 .github/
 Hackathon-ERP-Discussion.md
+skills/
+
+server/drizzle/
+
 .tmp-server-err.log
 .tmp-server-out.log
