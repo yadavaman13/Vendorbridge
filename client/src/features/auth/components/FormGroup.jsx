@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import '../styles/_form-group.scss';
 
@@ -15,13 +15,17 @@ const FormGroup = ({
   onBlur,
   onFocus,
   disabled = false,
+  options = [],
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const inputRef = useRef(null);
 
+  const isSelect = type === 'select';
+  const isTextarea = type === 'textarea';
   const isPassword = type === 'password';
   const inputType = isPassword ? (showPassword ? 'text' : 'password') : type;
   const inputValue = value ?? '';
+  const hasValue = inputValue !== '';
 
   const handleTogglePassword = (e) => {
     e.preventDefault();
@@ -33,22 +37,60 @@ const FormGroup = ({
   };
 
   return (
-    <div className={`form-group${hasError ? ' error' : ''}${isPassword ? ' has-password' : ''}`}>
-      <input
-        ref={inputRef}
-        value={inputValue}
-        onChange={onChange}
-        onBlur={onBlur}
-        onFocus={onFocus}
-        name={name || id}
-        className="form-input"
-        type={inputType}
-        id={id}
-        placeholder={placeholder || ' '}
-        aria-invalid={hasError ? 'true' : 'false'}
-        aria-describedby={errorMessage ? `${id}-error` : undefined}
-        disabled={disabled}
-      />
+    <div className={`form-group${hasError ? ' error' : ''}${isPassword ? ' has-password' : ''}${hasValue ? ' has-value' : ''}`}>
+      {isSelect ? (
+        <select
+          ref={inputRef}
+          value={inputValue}
+          onChange={onChange}
+          onBlur={onBlur}
+          onFocus={onFocus}
+          name={name || id}
+          className="form-input form-select"
+          id={id}
+          disabled={disabled}
+          aria-invalid={hasError ? 'true' : 'false'}
+          aria-describedby={errorMessage ? `${id}-error` : undefined}
+        >
+          <option value="" disabled hidden>{placeholder || ' '}</option>
+          {options.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      ) : isTextarea ? (
+        <textarea
+          ref={inputRef}
+          value={inputValue}
+          onChange={onChange}
+          onBlur={onBlur}
+          onFocus={onFocus}
+          name={name || id}
+          className="form-input form-textarea"
+          id={id}
+          placeholder={placeholder || ' '}
+          disabled={disabled}
+          aria-invalid={hasError ? 'true' : 'false'}
+          aria-describedby={errorMessage ? `${id}-error` : undefined}
+        />
+      ) : (
+        <input
+          ref={inputRef}
+          value={inputValue}
+          onChange={onChange}
+          onBlur={onBlur}
+          onFocus={onFocus}
+          name={name || id}
+          className="form-input"
+          type={inputType}
+          id={id}
+          placeholder={placeholder || ' '}
+          aria-invalid={hasError ? 'true' : 'false'}
+          aria-describedby={errorMessage ? `${id}-error` : undefined}
+          disabled={disabled}
+        />
+      )}
 
       {isPassword && (
         <button
