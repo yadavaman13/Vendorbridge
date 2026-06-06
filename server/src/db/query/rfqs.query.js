@@ -11,7 +11,7 @@ import {
   sql,
 } from "drizzle-orm";
 
-import { db } from "../config/database.js";
+import { db } from "../../config/database.js";
 import {
   quotationItems,
   quotations,
@@ -19,8 +19,8 @@ import {
   rfqVendors,
   rfqs,
   vendors,
-} from "../db/schema/schema.js";
-import { users } from "../db/schema/users.js";
+} from "../schema/schema.js";
+import { users } from "../schema/users.js";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 20;

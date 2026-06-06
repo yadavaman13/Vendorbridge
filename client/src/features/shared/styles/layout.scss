@@ -51,3 +51,106 @@
     align-items: center;
     justify-content: center;
 }
+
+/* App Shell Layout */
+.vb-app-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.vb-header {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--vb-space-6);
+    background: var(--vb-color-surface);
+    border-bottom: 1px solid var(--vb-color-border);
+    flex: 0 0 auto;
+}
+
+.vb-header__brand {
+    display: flex;
+    align-items: center;
+}
+
+.vb-header__logo {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--primary);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+}
+
+.vb-header__user-menu {
+    display: flex;
+    align-items: center;
+    gap: var(--vb-space-4);
+}
+
+.vb-header__profile {
+    display: flex;
+    align-items: center;
+    gap: var(--vb-space-3);
+}
+
+.vb-header__avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary);
+    color: var(--on-primary);
+    font-weight: 700;
+    font-size: 1.1rem;
+    border: 2px solid var(--border-color);
+}
+
+.vb-header__user-details {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.vb-header__username {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    line-height: 1.2;
+}
+
+.vb-header__user-role {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: capitalize;
+}
+
+.vb-app-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    background: var(--vb-color-surface-muted);
+}
+
+.vb-app-body .vb-sidebar {
+    height: 100%;
+    border-radius: 0;
+    border: none;
+    border-right: 1px solid var(--vb-color-border);
+    flex: 0 0 220px;
+    overflow-y: auto;
+}
+
+.vb-main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--vb-space-6);
+    background: var(--vb-color-surface-muted);
+    display: flex;
+    flex-direction: column;
+}

@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useContext } from 'react';
 
 import { AuthContext } from '../auth.context';
 import {
@@ -15,14 +15,23 @@ export const useAuth = () => {
 
     const { loading, setLoading, user, setUser, error, setError } = context;
 
+<<<<<<< HEAD
     const handleRegister = async ({ name, email, phone, role, password }) => {
+=======
+    const handleRegister = async ({ name, email, password, phone, companyName, gstNumber, categoryId, address }) => {
+>>>>>>> ca22778df33d11b21d8d6653d241fdc13363a3fd
         setLoading(true);
         setError(null);
 
         let data;
         try {
+<<<<<<< HEAD
             data = await register({ name, email, phone, role, password });
             console.log('Registration Failed', data);
+=======
+            data = await register({ name, email, password, phone, companyName, gstNumber, categoryId, address });
+            console.log('Registration Response', data);
+>>>>>>> ca22778df33d11b21d8d6653d241fdc13363a3fd
             if (data?.user) {
                 setUser(data.user);
                 sessionStorage.setItem('user', JSON.stringify(data.user));
@@ -33,9 +42,14 @@ export const useAuth = () => {
             const responseData = err?.response?.data;
             const message =
                 responseData?.message || err?.message || 'Registration failed.';
-            const errors = Array.isArray(responseData?.errors)
-                ? responseData.errors
-                : [];
+            
+            // Server validation returns errors under either "error" or "errors" key
+            let errors = [];
+            if (Array.isArray(responseData?.error)) {
+                errors = responseData.error;
+            } else if (Array.isArray(responseData?.errors)) {
+                errors = responseData.errors;
+            }
 
             setError(message);
 
@@ -62,8 +76,8 @@ export const useAuth = () => {
             } else {
                 throw new Error(data?.message || 'Login Failed');
             }
-        } catch (error) {
-            setError(data?.message || 'Login Failed');
+        } catch (err) {
+            setError(err?.response?.data?.message || err?.message || 'Login Failed');
         } finally {
             setLoading(false);
         }

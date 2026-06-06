@@ -12,6 +12,7 @@ const api = axios.create({
     withCredentials: true,
 });
 
+<<<<<<< HEAD
 export async function register({ name, email, phone, role, password }) {
     try {
         const response = await api.post(`${API_PATH_PREFIX}/auth/register`, {
@@ -62,13 +63,49 @@ export async function resendOtp({ email }) {
     } catch (error) {
         throw error;
     }
+=======
+export async function register({ name, email, password, phone, companyName, gstNumber, categoryId, address }) {
+    const response = await api.post('/api/auth/register', {
+        name,
+        email,
+        password,
+        phone,
+        companyName,
+        gstNumber,
+        categoryId,
+        address,
+    });
+    return response.data;
+}
+
+export async function login({ email, password }) {
+    const response = await api.post('/api/auth/login', {
+        email,
+        password,
+    });
+    return response.data;
+}
+
+export async function verifyEmail({ email, otp }) {
+    const response = await api.post('/api/auth/verify-email', {
+        email,
+        otp,
+    });
+    return response.data;
+}
+
+export async function resendOtp({ email }) {
+    const response = await api.post('/api/auth/resend-otp', {
+        email,
+    });
+    return response.data;
+>>>>>>> ca22778df33d11b21d8d6653d241fdc13363a3fd
 }
 
 export async function requestPasswordReset({ email }) {
     const response = await api.post(`${API_PATH_PREFIX}/auth/forgot-password`, {
         email,
     });
-
     return response.data;
 }
 
@@ -79,7 +116,6 @@ export async function resetPassword({ email, otp, password, confirmPassword }) {
         password,
         confirmPassword,
     });
-
     return response.data;
 }
 

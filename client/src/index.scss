@@ -1,7 +1,9 @@
 @use './features/shared/styles/variables';
 @use './features/shared/styles/button';
 @use './features/shared/styles/mixins' as *;
-// @use './features/shared/styles/layout';
+@use './features/shared/styles/layout';
+@use './features/dashboard/styles/dashboard';
+@use './features/vendors/styles/vendors';
 
 * {
     margin: 0;

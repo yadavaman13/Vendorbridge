@@ -1,14 +1,19 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router';
+import { useAuth } from '../../auth/hooks/useAuth';
 import '../styles/sidebar.scss';
 
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
+  const isVendor = user?.role === 'VENDOR';
 
   const items = [
     { label: 'Dashboard', path: '/dashboard' },
-    { label: 'Vendors', path: '/vendors' },
+    isVendor
+      ? { label: 'My Vendor Profile', path: '/vendors/me' }
+      : { label: 'Vendors', path: '/vendors' },
     { label: "RFQ's", path: '/rfqs' },
     { label: 'Quotations', path: '/quotations' },
     { label: 'Approvals', path: '/approvals' },
